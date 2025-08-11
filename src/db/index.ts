@@ -1,17 +1,17 @@
-import { Sequelize } from 'sequelize';
+import { QueryInterface, Sequelize } from 'sequelize';
 import dotEnv from 'dotenv';
 import dotenvExpand from 'dotenv-expand';
+import { Umzug, SequelizeStorage } from 'umzug';
 
-
-const configEnv = dotEnv.config();
+const configEnv: dotEnv.DotenvConfigOutput = dotEnv.config();
 dotenvExpand.expand(configEnv);
 
-const connectionString = process.env.DATABASE_URL;
+const connectionString: string | undefined = process.env.DATABASE_URL;
 if (!connectionString) {
 	throw new Error('DATABASE_URL is not set');
 }
 
-export const sequelize = new Sequelize(connectionString, {
+export const sequelize: Sequelize = new Sequelize(connectionString, {
 	dialect: 'postgres',
 	protocol: 'postgres',
 	logging: process.env.NODE_ENV === 'production' ? false : console.log,
@@ -25,3 +25,20 @@ export const sequelize = new Sequelize(connectionString, {
 		? { ssl: { rejectUnauthorized: false } }
 		: {}
 });
+
+export async function connectDB(): Promise<void> {
+	try {
+		await sequelize.authenticate();
+		console.log('Connection has been established successfully.');
+	} catch (error) {
+		console.error('Unable to connect to the database:', error);
+		throw error;
+	}
+}
+
+export const umzug: Umzug<QueryInterface> = new Umzug({
+	migrations: { glob: 'migrations/*.js' },
+	context: sequelize.getQueryInterface(),
+	storage: new SequelizeStorage({ sequelize }),
+	logger: console,
+})
