@@ -1,7 +1,7 @@
-import { QueryInterface, Sequelize } from 'sequelize';
+import { Sequelize } from 'sequelize-typescript';
+import { User, Sticker, Session, SessionParticipant } from '../models/index.js';
 import dotEnv from 'dotenv';
 import dotenvExpand from 'dotenv-expand';
-import { Umzug, SequelizeStorage } from 'umzug';
 
 const configEnv: dotEnv.DotenvConfigOutput = dotEnv.config();
 dotenvExpand.expand(configEnv);
@@ -21,6 +21,7 @@ export const sequelize: Sequelize = new Sequelize(connectionString, {
 		acquire: 30000,
 		idle: 10000
 	},
+	models: [User, Sticker, Session, SessionParticipant],
 	dialectOptions: process.env.NODE_ENV === 'production'
 		? { ssl: { rejectUnauthorized: false } }
 		: {}
@@ -35,10 +36,3 @@ export async function connectDB(): Promise<void> {
 		throw error;
 	}
 }
-
-export const umzug: Umzug<QueryInterface> = new Umzug({
-	migrations: { glob: 'migrations/*.js' },
-	context: sequelize.getQueryInterface(),
-	storage: new SequelizeStorage({ sequelize }),
-	logger: console,
-})

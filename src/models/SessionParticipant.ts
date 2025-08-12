@@ -1,11 +1,13 @@
 import { Table, Column, Model, DataType, ForeignKey, BelongsTo } from 'sequelize-typescript';
-import { Optional } from 'sequelize';
+import { Session } from './Session';
 import { User } from './User';
-import { Session } from '.';
-import { StickerAttributes, StickerCreationAttributes } from '../types';
+import { SessionParticipantAttributes, SessionParticipantCreationAttributes } from '../types';
 
-@Table({ tableName: 'stickers' })
-export class Sticker extends Model<StickerAttributes, StickerCreationAttributes> implements StickerAttributes {
+@Table({ tableName: 'session_participants' })
+export class SessionParticipant extends Model<
+	SessionParticipantAttributes,
+	SessionParticipantCreationAttributes
+> implements SessionParticipantAttributes {
 	declare id: number;
 
 	@ForeignKey(() => Session)
@@ -22,17 +24,8 @@ export class Sticker extends Model<StickerAttributes, StickerCreationAttributes>
 	@BelongsTo(() => User)
 	declare user?: User;
 
-	@Column({ type: DataType.STRING, allowNull: false })
-	declare text: string;
-
-	@Column({ type: DataType.FLOAT, defaultValue: 0 })
-	declare x: number;
-
-	@Column({ type: DataType.FLOAT, defaultValue: 0 })
-	declare y: number;
-
 	@Column(DataType.STRING)
-	declare color?: string | null;
+	declare role?: string | null;
 
 	@Column(DataType.DATE)
 	declare createdAt?: Date;

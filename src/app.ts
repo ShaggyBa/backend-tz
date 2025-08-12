@@ -3,8 +3,8 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import bodyParser from 'body-parser';
-import { apiRouter } from './routes';
-import { sequelize } from './db';
+import { apiRouter } from './routes/index.js';
+import { sequelize } from './db/index.js';
 
 // * Init server
 export const app: express.Application = express();

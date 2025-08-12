@@ -1,20 +1,33 @@
 {
 	"compilerOptions": {
-		"target": "ES2020",
-		"module": "ES2020", // <-- ES модули
+		"target": "ES2022",
+		"module": "es2022",
+		"moduleResolution": "node",
 		"rootDir": "src",
 		"outDir": "dist",
 		"strict": true,
 		"esModuleInterop": true,
+		"experimentalDecorators": true,
+		"emitDecoratorMetadata": true,
 		"allowSyntheticDefaultImports": true,
-		"moduleResolution": "node",
 		"skipLibCheck": true,
 		"sourceMap": true,
-		"resolveJsonModule": true
+		"resolveJsonModule": true,
+		"types": [
+			"node"
+		],
+		"lib": [
+			"ES2020",
+			"ES2022",
+			"DOM",
+			"esnext",
+			"esnext.asynciterable",
+			"esnext.disposable"
+		]
 	},
 	"include": [
 		"src/**/*"
-	], // <-- точно указывает на файлы внутри src
+	],
 	"exclude": [
 		"node_modules",
 		"dist"
