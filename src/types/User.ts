@@ -2,7 +2,7 @@ import { Optional } from "sequelize";
 
 // * User attributes 
 export interface UserAttributes {
-	id: number;
+	id: string;
 	email: string;
 	name?: string | null;
 	passwordHash: string;

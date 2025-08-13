@@ -34,7 +34,7 @@ export class SessionController {
 	// GET /api/sessions/:id
 	getById = async (req: Request<{ id: string }>, res: Response, next: NextFunction) => {
 		try {
-			const id = Number(req.params.id);
+			const id = req.params.id;
 			const session = await this.sessionModel.findByPk(id, { include: [{ model: this.participantModel }] });
 			if (!session) return res.status(404).json({ error: 'Session not found' });
 			return res.json(session);
@@ -46,7 +46,7 @@ export class SessionController {
 	// UPDATE /api/sessions/:id
 	update = async (req: Request<{ id: string }, {}, UpdateSessionDTO>, res: Response, next: NextFunction) => {
 		try {
-			const id = Number(req.params.id);
+			const id = req.params.id;
 			const dto = req.body;
 			const session = await this.sessionModel.findByPk(id);
 			if (!session) return res.status(404).json({ error: 'Session not found' });
@@ -60,7 +60,7 @@ export class SessionController {
 	// DELETE /api/sessions/:id
 	delete = async (req: Request<{ id: string }>, res: Response, next: NextFunction) => {
 		try {
-			const id = Number(req.params.id);
+			const id = req.params.id;
 			const session = await this.sessionModel.findByPk(id);
 			if (!session) return res.status(404).json({ error: 'Session not found' });
 			await session.destroy();

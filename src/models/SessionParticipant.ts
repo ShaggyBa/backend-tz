@@ -8,18 +8,19 @@ export class SessionParticipant extends Model<
 	SessionParticipantAttributes,
 	SessionParticipantCreationAttributes
 > implements SessionParticipantAttributes {
-	declare id: number;
+	@Column({ type: DataType.UUID, defaultValue: DataType.UUIDV4, primaryKey: true })
+	declare id: string;
 
 	@ForeignKey(() => Session)
-	@Column({ type: DataType.INTEGER, allowNull: false })
-	declare sessionId: number;
+	@Column({ type: DataType.UUID, allowNull: false })
+	declare sessionId: string;
 
 	@BelongsTo(() => Session)
 	declare session?: Session;
 
 	@ForeignKey(() => User)
-	@Column({ type: DataType.INTEGER, allowNull: false })
-	declare userId: number;
+	@Column({ type: DataType.UUID, allowNull: false })
+	declare userId: string;
 
 	@BelongsTo(() => User)
 	declare user?: User;

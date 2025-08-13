@@ -6,7 +6,8 @@ import { SessionAttributes, SessionCreationAttributes } from '../types';
 
 @Table({ tableName: 'sessions' })
 export class Session extends Model<SessionAttributes, SessionCreationAttributes> implements SessionAttributes {
-	declare id: number;
+	@Column({ type: DataType.UUID, defaultValue: DataType.UUIDV4, primaryKey: true })
+	declare id: string;
 
 	@Column({ type: DataType.STRING, allowNull: false, unique: true })
 	declare name: string;

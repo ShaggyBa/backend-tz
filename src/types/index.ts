@@ -1,50 +1,43 @@
-import {
+export type {
 	UserAttributes,
 	UserCreationAttributes
-} from "./User"
+} from './User';
 
-import {
+export type {
 	StickerAttributes,
 	StickerCreationAttributes
-} from "./Sticker"
+} from './Sticker';
 
-import {
+export type {
 	SessionAttributes,
 	SessionCreationAttributes
-} from "./Session"
+} from './Session';
 
-import {
+export type {
 	SessionParticipantAttributes,
 	SessionParticipantCreationAttributes
-} from "./SessionParticipant"
+} from './SessionParticipant';
 
-import {
-	CreateUserDTO,
-	UpdateUserDTO,
-
-	CreateSessionDTO,
-	UpdateSessionDTO,
+export type {
 	AddParticipantDTO,
-
+	CreateSessionDTO,
 	CreateStickerDTO,
-	UpdateStickerDTO
-} from "./dto"
-
+	CreateUserDTO,
+	UpdateSessionDTO,
+	UpdateStickerDTO,
+	UpdateUserDTO
+} from './schema';
 
 export {
-	UserAttributes,
-	UserCreationAttributes,
-	StickerAttributes,
-	StickerCreationAttributes,
-	SessionAttributes,
-	SessionCreationAttributes,
-	SessionParticipantAttributes,
-	SessionParticipantCreationAttributes,
-	CreateUserDTO,
-	UpdateUserDTO,
-	CreateSessionDTO,
-	UpdateSessionDTO,
-	AddParticipantDTO,
-	CreateStickerDTO,
-	UpdateStickerDTO
-}
+	addParticipantSchema,
+	createSessionSchema,
+	createStickerSchema,
+	createUserSchema,
+	idParamSchema,
+	participantSchema,
+	sessionQuerySchema,
+	updateSessionSchema,
+	updateStickerSchema,
+	updateUserSchema
+} from './schema';
+

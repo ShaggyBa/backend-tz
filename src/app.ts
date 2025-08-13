@@ -5,6 +5,7 @@ import helmet from 'helmet';
 import bodyParser from 'body-parser';
 import { apiRouter } from './routes/index.js';
 import { sequelize } from './db/index.js';
+import { errorHandler } from './middleware/ErrorHandler.js';
 
 // * Init server
 export const app: express.Application = express();
@@ -34,8 +35,5 @@ app.use((_req, res) => {
 	res.status(404).json({ error: 'Not found' });
 });
 
-// central error handler
-app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
-	console.error(err);
-	res.status(err.status || 500).json({ error: err.message || 'Internal Server Error' });
-});
+// error handler
+app.use(errorHandler);

@@ -2,7 +2,7 @@ import { Optional } from "sequelize";
 
 // * Session attributes
 export interface SessionAttributes {
-	id: number;
+	id: string;
 	name: string;
 	createdAt?: Date;
 	updatedAt?: Date;

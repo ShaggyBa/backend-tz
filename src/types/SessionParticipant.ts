@@ -2,9 +2,9 @@ import { Optional } from "sequelize";
 
 // * SessionParticipant attributes
 export interface SessionParticipantAttributes {
-	id: number;
-	sessionId: number;
-	userId: number;
+	id: string;
+	sessionId: string;
+	userId: string;
 	role?: string | null;
 	createdAt?: Date;
 	updatedAt?: Date;

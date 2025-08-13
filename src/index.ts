@@ -16,7 +16,7 @@ const PORT: number = Number(process.env.PORT || 3000);
 async function start(): Promise<void> {
 	// * DB connection
 	if (process.env.NODE_ENV !== 'production') {
-		await sequelize.sync({ alter: true }); // dev only - если успею разобраться с миграциями, добавлю миграции
+		// await sequelize.sync({ alter: true }); // dev only - если успею разобраться с миграциями, добавлю миграции
 	}
 	// * Start http server
 	const httpServer = createServer(app);

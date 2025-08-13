@@ -5,7 +5,8 @@ import { UserAttributes, UserCreationAttributes } from '../types';
 
 @Table({ tableName: 'users' })
 export class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
-	declare id: number;
+	@Column({ type: DataType.UUID, defaultValue: DataType.UUIDV4, primaryKey: true })
+	declare id: string;
 
 	@Column({ type: DataType.STRING, allowNull: false, unique: true })
 	declare email: string;

@@ -2,9 +2,9 @@ import { Optional } from "sequelize";
 
 // * Sticker attributes
 export interface StickerAttributes {
-	id: number;
-	sessionId: number;
-	userId: number;
+	id: string;
+	sessionId: string;
+	userId: string;
 	text: string;
 	x: number;
 	y: number;
