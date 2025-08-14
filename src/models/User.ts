@@ -1,6 +1,5 @@
-import { Column, DataType, HasMany, Model, Table } from 'sequelize-typescript';
-import { SessionParticipant } from '.';
-import { Sticker } from './Sticker';
+import { BelongsToMany, Column, DataType, HasMany, Model, Table } from 'sequelize-typescript';
+import { SessionParticipant, Sticker, Session } from '.';
 import { UserAttributes, UserCreationAttributes } from '../types';
 
 @Table({ tableName: 'users' })
@@ -29,6 +28,13 @@ export class User extends Model<UserAttributes, UserCreationAttributes> implemen
 	@HasMany(() => Sticker)
 	declare stickers?: Sticker[];
 
+	@HasMany(() => Session, 'ownerId')
+	declare ownedSessions?: Session[];
+
 	@HasMany(() => SessionParticipant)
-	declare sessions?: SessionParticipant[];
+	declare sessionParticipants?: SessionParticipant[];
+
+	@BelongsToMany(() => Session, () => SessionParticipant)
+	declare sessions?: Session[];
+
 }

@@ -1,5 +1,4 @@
 import express from 'express';
-import { idParamSchema, sessionQuerySchema } from '../types';
 import UserRoutes from './UserRoutes';
 import StickerRoutes from './StickerRoutes';
 import SessionRoutes from './SessionRoutes';

@@ -1,11 +1,11 @@
 //* Import modules, adapters
-import { createServer } from 'http';
-import { app } from './app';
-import { sequelize } from './db/index';
-import { Server as IOServer } from 'socket.io';
 import dotEnv from 'dotenv';
 import dotenvExpand from 'dotenv-expand';
-import { Sticker } from './models/index';
+import type * as express from 'express';
+import { createServer } from 'http';
+import { app } from './app';
+import { sequelize } from './db';
+import { SocketManager } from './SocketManager';
 
 // * Define base variables
 const configEnv: dotEnv.DotenvConfigOutput = dotEnv.config();
@@ -22,21 +22,19 @@ async function start(): Promise<void> {
 	const httpServer = createServer(app);
 
 
-	const io = new IOServer(httpServer, { cors: { origin: '*' } });
+	const socketManager = new SocketManager();
 
-	io.on('connection', (socket) => {
-		console.log('WS connected:', socket.id);
+	// TODO вынести в отдельный файл + настроить функционал верификации JWT
+	// const socketManager = new SocketManager({
+	// 	verifyToken: async (token) => {
+	// 		const payload = jwt.verify(token, process.env.JWT_SECRET);
+	// 		return { userId: (payload as any).sub || (payload as any).userId };
+	// 	}
+	// });
 
-		socket.on('createSticker', async (data) => {
-			// пример сохранения стикера
-			const sticker = await Sticker.create(data);
-			io.emit('stickerCreated', sticker); // всем клиентам
-		});
+	socketManager.init(httpServer);
 
-		socket.on('disconnect', () => {
-			console.log('WS disconnected:', socket.id);
-		});
-	});
+	(app as express.Application).locals.socketManager = socketManager;
 
 	const server = httpServer.listen(PORT, () => {
 		console.log(`Server listening on http://localhost:${PORT}`);

@@ -1,6 +1,5 @@
-import { Table, Column, Model, DataType, ForeignKey, BelongsTo } from 'sequelize-typescript';
-import { Session } from './Session';
-import { User } from './User';
+import { BelongsTo, Column, DataType, ForeignKey, Model, Table } from 'sequelize-typescript';
+import { Session, User } from '.';
 import { SessionParticipantAttributes, SessionParticipantCreationAttributes } from '../types';
 
 @Table({ tableName: 'session_participants' })

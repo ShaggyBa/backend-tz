@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { ModelStatic, WhereOptions } from 'sequelize';
 import { Sticker } from '../models';
-import { StickerCreationAttributes, CreateStickerDTO, UpdateStickerDTO, StickerAttributes } from '../types';
+import { StickerCreationAttributes, CreateStickerDTO, UpdateStickerDTO, StickerAttributes, ISocketManager, nullBus } from '../types';
 
 export class StickerController {
 	constructor(private stickerModel: ModelStatic<Sticker>) { }
@@ -9,7 +9,7 @@ export class StickerController {
 	// POST /api/stickers
 	create = async (req: Request<{}, {}, CreateStickerDTO>, res: Response, next: NextFunction) => {
 		try {
-			const dto = req.body;
+			const dto = req.body as CreateStickerDTO;
 			const payload: StickerCreationAttributes = {
 				sessionId: dto.sessionId,
 				userId: dto.userId,
@@ -19,6 +19,12 @@ export class StickerController {
 				color: dto.color ?? null
 			};
 			const sticker = await this.stickerModel.create(payload);
+
+			const appLocals = (req.app as unknown as { locals?: Record<string, unknown> }).locals ?? {};
+			const runtimeSocketManager = (appLocals.socketManager as ISocketManager | undefined) ?? nullBus;
+
+			runtimeSocketManager.emitToSessionStickerCreated(sticker.sessionId, sticker.toJSON());
+
 			return res.status(201).json(sticker);
 		} catch (err) {
 			return next(err);
@@ -76,11 +82,18 @@ export class StickerController {
 			const id = req.params.id;
 			if (!id) return res.status(400).json({ error: 'Missing id' });
 
-			const dto = req.body;
+			const dto = req.body as UpdateStickerDTO;
 			const sticker = await this.stickerModel.findByPk(id);
 			if (!sticker) return res.status(404).json({ error: 'Sticker not found' });
 
 			const updated = await sticker.update(dto as Partial<StickerCreationAttributes>);
+
+			const appLocals = (req.app as unknown as { locals?: Record<string, unknown> }).locals ?? {};
+			const runtimeSocketManager = (appLocals.socketManager as ISocketManager | undefined) ?? nullBus;
+
+			runtimeSocketManager.emitToSessionStickerCreated(updated.sessionId, updated.toJSON());
+
+
 			return res.json(updated);
 		} catch (err) {
 			return next(err);
@@ -94,6 +107,12 @@ export class StickerController {
 			const sticker = await this.stickerModel.findByPk(id);
 			if (!sticker) return res.status(404).json({ error: 'Sticker not found' });
 			await sticker.destroy();
+
+			const appLocals = (req.app as unknown as { locals?: Record<string, unknown> }).locals ?? {};
+			const runtimeSocketManager = (appLocals.socketManager as ISocketManager | undefined) ?? nullBus;
+
+			runtimeSocketManager.emitToSessionStickerDeleted(sticker.sessionId, sticker.toJSON());
+
 			return res.json({ message: 'Deleted' });
 		} catch (err) {
 			next(err);

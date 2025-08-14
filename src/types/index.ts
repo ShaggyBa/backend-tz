@@ -19,6 +19,17 @@ export type {
 } from './SessionParticipant';
 
 export type {
+	ParticipantPayload,
+	StickerPayload,
+	VerifyFn,
+	ISocketManager,
+} from "./ws"
+
+export {
+	nullBus
+} from "./ws"
+
+export type {
 	AddParticipantDTO,
 	CreateSessionDTO,
 	CreateStickerDTO,

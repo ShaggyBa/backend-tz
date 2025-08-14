@@ -1,13 +1,22 @@
 import { Request, Response, NextFunction } from 'express';
 import { ModelStatic } from 'sequelize';
 import { Session, SessionParticipant } from '../models';
-import { SessionParticipantCreationAttributes, AddParticipantDTO } from '../types/';
+import {
+	SessionParticipantCreationAttributes,
+	AddParticipantDTO,
+	ParticipantPayload,
+	SessionParticipantAttributes
+} from '../types';
+import { ISocketManager, nullBus } from '../types/';
+import { getRuntimeSocketManager } from '../utils/getRuntimeSocketManager';
 
 export class SessionParticipantController {
 	constructor(
 		private participantModel: ModelStatic<SessionParticipant>,
 		private sessionModel: ModelStatic<Session>
 	) { }
+
+
 
 	// POST /api/sessions/:id/participants
 	add = async (req: Request<{ id: string }, {}, AddParticipantDTO>, res: Response, next: NextFunction) => {
@@ -18,11 +27,24 @@ export class SessionParticipantController {
 			const session = await this.sessionModel.findByPk(sessionId);
 			if (!session) return res.status(404).json({ error: 'Session not found' });
 
-			const created: SessionParticipantCreationAttributes = await this.participantModel.create({
+			const created = await this.participantModel.create({
 				sessionId,
 				userId: dto.userId,
 				role: dto.role ?? 'guest'
-			});
+			} as SessionParticipantCreationAttributes);
+
+			const payload: ParticipantPayload = {
+				id: created.id,
+				sessionId: created.sessionId,
+				userId: created.userId,
+				role: created.role ?? null,
+				createdAt: created.createdAt?.toISOString()
+			};
+			console.log(created, payload, 'created');
+			const runtimeBus = getRuntimeSocketManager(req);
+			console.log(runtimeBus, 'runtimeBus');
+			runtimeBus.emitParticipantJoined(sessionId, payload);
+			console.log("emmited?")
 			return res.status(201).json(created);
 		} catch (err) {
 			return next(err);
@@ -33,24 +55,34 @@ export class SessionParticipantController {
 	list = async (req: Request<{ id: string }>, res: Response, next: NextFunction) => {
 		try {
 			const sessionId = req.params.id;
-			const participants = await this.participantModel.findAll({ where: { sessionId } });
-			res.json(participants);
+			const participants = await this.participantModel.findAll({
+				where: { sessionId },
+				order: [['createdAt', 'ASC']]
+			});
+			return res.json(participants);
 		} catch (err) {
-			next(err);
+			return next(err);
 		}
 	};
 
 	// DELETE /api/sessions/:id/participants/:participantId
 	remove = async (req: Request<{ id: string; participantId: string }>, res: Response, next: NextFunction) => {
 		try {
-			console.log(req.params)
 			const participantId = req.params.participantId;
 			const p = await this.participantModel.findByPk(participantId);
 			if (!p) return res.status(404).json({ error: 'Participant not found' });
+
+			const data = p.toJSON() as SessionParticipantAttributes;
+			const sessionId = data.sessionId;
+
 			await p.destroy();
-			res.json({ message: 'Removed' });
+
+			const runtimeBus = getRuntimeSocketManager(req);
+			runtimeBus.emitParticipantLeft(sessionId, { id: data.id, sessionId: data.sessionId, userId: data.userId });
+
+			return res.json({ message: 'Removed' });
 		} catch (err) {
-			next(err);
+			return next(err);
 		}
 	};
 }

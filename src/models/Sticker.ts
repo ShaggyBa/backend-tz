@@ -1,7 +1,5 @@
-import { Table, Column, Model, DataType, ForeignKey, BelongsTo } from 'sequelize-typescript';
-import { Optional } from 'sequelize';
-import { User } from './User';
-import { Session } from '.';
+import { BelongsTo, Column, DataType, ForeignKey, Model, Table } from 'sequelize-typescript';
+import { Session, User } from '.';
 import { StickerAttributes, StickerCreationAttributes } from '../types';
 
 @Table({ tableName: 'stickers' })

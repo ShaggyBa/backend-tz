@@ -5,7 +5,7 @@ import helmet from 'helmet';
 import bodyParser from 'body-parser';
 import { apiRouter } from './routes/index.js';
 import { sequelize } from './db/index.js';
-import { errorHandler } from './middleware/ErrorHandler.js';
+import { errorHandler } from './middleware/errorHandler';
 
 // * Init server
 export const app: express.Application = express();
