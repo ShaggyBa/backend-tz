@@ -1,7 +1,6 @@
 import http from 'http';
 import { Server as IOServer, Socket } from 'socket.io';
 import type { StickerPayload, ParticipantPayload, VerifyFn } from './types';
-// import jwt from 'jsonwebtoken';
 import "dotenv/config";
 
 export class SocketManager {
@@ -21,7 +20,6 @@ export class SocketManager {
 
 		console.log('Socket connected:', socket.id, handshake);
 
-		// TODO доработать аутентификацию
 		const token = socket.handshake.auth?.token as string | undefined;
 		if (token && this.options.verifyToken) {
 			try {

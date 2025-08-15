@@ -13,7 +13,10 @@ export class SessionController {
 	create = async (req: Request<{}, {}, CreateSessionDTO>, res: Response, next: NextFunction) => {
 		try {
 			const dto = req.body;
-			const payload: SessionCreationAttributes = { name: dto.name };
+			const userId = req.userId;
+			if (!userId)
+				return res.status(401).json({ error: 'Unauthorized' });
+			const payload: SessionCreationAttributes = { name: dto.name, ownerId: userId };
 			const session = await this.sessionModel.create(payload);
 			return res.status(201).json(session);
 		} catch (err) {

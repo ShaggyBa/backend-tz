@@ -14,10 +14,10 @@ export class User extends Model<UserAttributes, UserCreationAttributes> implemen
 	declare name?: string | null;
 
 	@Column({ type: DataType.STRING, allowNull: false })
-	declare passwordHash: string; // TODO заглушка для пароля
+	declare passwordHash: string;
 
 	@Column(DataType.STRING)
-	declare jwtToken?: string; // TODO заглушка для токена
+	declare jwtToken?: string | null;
 
 	@Column(DataType.DATE)
 	declare createdAt?: Date;

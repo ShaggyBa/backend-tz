@@ -4,7 +4,7 @@ import { z } from 'zod';
 export const createUserSchema = z.object({
 	email: z.email(),
 	name: z.string().optional(),
-	password: z.string().min(6) // TODO: в дальнейшем хешировать
+	password: z.string().min(6)
 });
 export type CreateUserDTO = z.infer<typeof createUserSchema>;
 
@@ -12,7 +12,6 @@ export const updateUserSchema = z.object({
 	email: z.email().optional(),
 	name: z.string().optional(),
 	password: z.string().min(6).optional(),
-	jwtToken: z.string().nullable().optional()
 });
 export type UpdateUserDTO = z.infer<typeof updateUserSchema>;
 

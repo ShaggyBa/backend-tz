@@ -3,6 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import bodyParser from 'body-parser';
+import cookieParser from 'cookie-parser';
 import { apiRouter } from './routes/index.js';
 import { sequelize } from './db/index.js';
 import { errorHandler } from './middleware/errorHandler';
@@ -12,7 +13,11 @@ export const app: express.Application = express();
 
 // * Config server
 app.use(helmet());
-app.use(cors());
+app.use(cors({
+	origin: ['http://localhost:3000'],
+	credentials: true,
+}));
+app.use(cookieParser());
 app.use(bodyParser.json());
 
 // health check

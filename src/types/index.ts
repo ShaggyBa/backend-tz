@@ -52,3 +52,7 @@ export {
 	updateUserSchema
 } from './schema';
 
+export type {
+	AuthedRequest,
+	TokenPayload
+} from "./auth"

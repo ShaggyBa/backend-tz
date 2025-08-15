@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { ModelStatic } from 'sequelize';
 import { User } from '../models';
 import { UserCreationAttributes, CreateUserDTO, UpdateUserDTO } from '../types';   // z.infer types
+import { hashPassword } from '../utils/password';
 
 export class UserController {
 	constructor(private userModel: ModelStatic<User>) { }
@@ -10,14 +11,14 @@ export class UserController {
 	create = async (req: Request<{}, {}, CreateUserDTO>, res: Response, next: NextFunction) => {
 		try {
 			const dto = req.body;
-			// TODO: хешировать пароль перед сохранением
 			const payload: UserCreationAttributes = {
 				email: dto.email,
 				name: dto.name ?? null,
-				passwordHash: dto.password ?? ''
+				passwordHash: dto.password ? await hashPassword(dto.password) : ''
 			};
 			const user = await this.userModel.create(payload);
-			return res.status(201).json(user);
+			const { passwordHash: _ph, ...safe } = user.toJSON() as any;
+			return res.status(201).json(safe);
 		} catch (err) {
 			return next(err);
 		}
@@ -58,14 +59,21 @@ export class UserController {
 			const user = await this.userModel.findByPk(id);
 			if (!user) return res.status(404).json({ error: 'User not found' });
 
-			const updated = await user.update({
+			const dataToUpdate: Partial<UserCreationAttributes> = {
 				email: dto.email ?? user.email,
-				name: dto.name ?? user.name,
-				passwordHash: dto.password ? dto.password : user.passwordHash, // TODO: хешировать
-				jwtToken: dto.jwtToken ?? user.jwtToken
-			} as Partial<UserCreationAttributes>);
+				name: dto.name ?? user.name
+			};
 
-			return res.json(updated);
+			if (dto.password) {
+				dataToUpdate.passwordHash = await hashPassword(dto.password);
+				// invalidate stored refresh token
+				dataToUpdate.jwtToken = null;
+			}
+
+			const updated = await user.update(dataToUpdate);
+
+			const { passwordHash: _ph, ...safe } = updated.toJSON() as any;
+			return res.json(safe);
 		} catch (err) {
 			return next(err);
 		}

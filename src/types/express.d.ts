@@ -8,5 +8,9 @@ declare global {
 				[key: string]: unknown;
 			};
 		}
+		interface Request {
+			userId?: string;
+		}
+
 	}
 }

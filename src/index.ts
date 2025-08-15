@@ -4,8 +4,8 @@ import dotenvExpand from 'dotenv-expand';
 import type * as express from 'express';
 import { createServer } from 'http';
 import { app } from './app';
-import { sequelize } from './db';
 import { SocketManager } from './SocketManager';
+import { verifyToken } from './utils/jwt';
 
 // * Define base variables
 const configEnv: dotEnv.DotenvConfigOutput = dotEnv.config();
@@ -22,15 +22,14 @@ async function start(): Promise<void> {
 	const httpServer = createServer(app);
 
 
-	const socketManager = new SocketManager();
-
-	// TODO вынести в отдельный файл + настроить функционал верификации JWT
-	// const socketManager = new SocketManager({
-	// 	verifyToken: async (token) => {
-	// 		const payload = jwt.verify(token, process.env.JWT_SECRET);
-	// 		return { userId: (payload as any).sub || (payload as any).userId };
-	// 	}
-	// });
+	const socketManager = new SocketManager({
+		verifyToken: async (token) => {
+			const raw = typeof token === 'string' && token.startsWith('Bearer ') ? token.slice(7) : token;
+			const payload = verifyToken(raw);
+			return payload ? { userId: payload.userId } : null;
+		}
+	}
+	);
 
 	socketManager.init(httpServer);
 
