@@ -1,5 +1,5 @@
 import { Sequelize } from 'sequelize-typescript';
-import { User, Sticker, Session, SessionParticipant } from '../models/index.js';
+import { User, Sticker, Session, SessionParticipant } from '../models/';
 import dotEnv from 'dotenv';
 import dotenvExpand from 'dotenv-expand';
 
