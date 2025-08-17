@@ -5,6 +5,9 @@ import { UserController } from './UserController';
 import { AuthController } from './AuthController';
 
 export {
-	SessionController, SessionParticipantController, StickerController,
-	UserController, AuthController
+  SessionController,
+  SessionParticipantController,
+  StickerController,
+  UserController,
+  AuthController,
 };

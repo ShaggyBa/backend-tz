@@ -3,38 +3,36 @@ import { Session, User } from '.';
 import { SessionParticipantAttributes, SessionParticipantCreationAttributes } from '../types';
 
 @Table({
-	tableName: 'session_participants',
-	indexes: [
-		{ unique: true, fields: ['sessionId', 'userId'] }
-	]
+  tableName: 'session_participants',
+  indexes: [{ unique: true, fields: ['sessionId', 'userId'] }],
 })
-export class SessionParticipant extends Model<
-	SessionParticipantAttributes,
-	SessionParticipantCreationAttributes
-> implements SessionParticipantAttributes {
-	@Column({ type: DataType.UUID, defaultValue: DataType.UUIDV4, primaryKey: true })
-	declare id: string;
+export class SessionParticipant
+  extends Model<SessionParticipantAttributes, SessionParticipantCreationAttributes>
+  implements SessionParticipantAttributes
+{
+  @Column({ type: DataType.UUID, defaultValue: DataType.UUIDV4, primaryKey: true })
+  declare id: string;
 
-	@ForeignKey(() => Session)
-	@Column({ type: DataType.UUID, allowNull: false })
-	declare sessionId: string;
+  @ForeignKey(() => Session)
+  @Column({ type: DataType.UUID, allowNull: false })
+  declare sessionId: string;
 
-	@BelongsTo(() => Session)
-	declare session?: Session;
+  @BelongsTo(() => Session)
+  declare session?: Session;
 
-	@ForeignKey(() => User)
-	@Column({ type: DataType.UUID, allowNull: false })
-	declare userId: string;
+  @ForeignKey(() => User)
+  @Column({ type: DataType.UUID, allowNull: false })
+  declare userId: string;
 
-	@BelongsTo(() => User)
-	declare user?: User;
+  @BelongsTo(() => User)
+  declare user?: User;
 
-	@Column(DataType.STRING)
-	declare role?: string | null;
+  @Column(DataType.STRING)
+  declare role?: string | null;
 
-	@Column(DataType.DATE)
-	declare createdAt?: Date;
+  @Column(DataType.DATE)
+  declare createdAt?: Date;
 
-	@Column(DataType.DATE)
-	declare updatedAt?: Date;
+  @Column(DataType.DATE)
+  declare updatedAt?: Date;
 }

@@ -1,21 +1,27 @@
 import { Router } from 'express';
-import { Sticker } from '../models';
+import { Session, Sticker } from '../models';
 import { StickerController } from '../controllers';
 import { Validator } from '../validation/Validator';
-import { createStickerSchema, updateStickerSchema, sessionQuerySchema, idParamSchema } from '../types';
+import {
+	createStickerSchema,
+	updateStickerSchema,
+	sessionQuerySchema,
+	idParamSchema,
+} from '../types';
 import { requireAuth } from '../middleware/authHandler';
 import { requireSessionAccess } from '../middleware/requireSessionAccess';
 
 const router = Router();
 const validator = new Validator();
-const ctrl = new StickerController(Sticker);
+const ctrl = new StickerController(Sticker, Session);
 
-// /api/stickers
+// /api/stickers:id
 router.post(
-	'/',
+	'/:id',
 	requireAuth,
+	validator.validateParams(idParamSchema),
 	validator.validateBody(createStickerSchema),
-	requireSessionAccess({ source: 'body', key: 'sessionId', requireOwner: false }),
+	requireSessionAccess({ source: 'params', key: 'id', requireOwner: false }),
 	ctrl.create
 );
 

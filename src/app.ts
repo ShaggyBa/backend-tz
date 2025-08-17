@@ -13,10 +13,12 @@ export const app: express.Application = express();
 
 // * Config server
 app.use(helmet());
-app.use(cors({
-	origin: ['http://localhost:3000'],
-	credentials: true,
-}));
+app.use(
+  cors({
+    origin: ['http://localhost:3000'],
+    credentials: true,
+  })
+);
 app.use(cookieParser());
 app.use(bodyParser.json());
 
@@ -24,12 +26,12 @@ app.use(bodyParser.json());
 app.get('/health', (_req, res) => res.json({ status: 'ok' }));
 
 app.get('/ready', async (_req, res) => {
-	try {
-		await sequelize.authenticate();
-		res.json({ ready: true });
-	} catch (err) {
-		res.status(503).json({ ready: false });
-	}
+  try {
+    await sequelize.authenticate();
+    res.json({ ready: true });
+  } catch (err) {
+    res.status(503).json({ ready: false });
+  }
 });
 
 // API
@@ -37,7 +39,7 @@ app.use('/api', apiRouter);
 
 // 404
 app.use((_req, res) => {
-	res.status(404).json({ error: 'Not found' });
+  res.status(404).json({ error: 'Not found' });
 });
 
 // error handler

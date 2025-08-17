@@ -19,30 +19,30 @@ router.get('/', requireAuth, ctrl.list);
 
 // api/sessions/:id
 router.get(
-	'/:id',
-	requireAuth,
-	validator.validateParams(idParamSchema),
-	requireSessionAccess({ source: 'params', key: 'id', requireOwner: false }),
-	ctrl.getById
+  '/:id',
+  requireAuth,
+  validator.validateParams(idParamSchema),
+  requireSessionAccess({ source: 'params', key: 'id', requireOwner: false }),
+  ctrl.getById
 );
 
 // api/sessions/:id
 router.patch(
-	'/:id',
-	requireAuth,
-	validator.validateParams(idParamSchema),
-	requireSessionAccess({ source: 'params', key: 'id', requireOwner: true }),
-	validator.validateBody(updateSessionSchema),
-	ctrl.update
+  '/:id',
+  requireAuth,
+  validator.validateParams(idParamSchema),
+  requireSessionAccess({ source: 'params', key: 'id', requireOwner: true }),
+  validator.validateBody(updateSessionSchema),
+  ctrl.update
 );
 
 // api/sessions/:id
 router.delete(
-	'/:id',
-	requireAuth,
-	validator.validateParams(idParamSchema),
-	requireSessionAccess({ source: 'params', key: 'id', requireOwner: true }),
-	ctrl.delete
+  '/:id',
+  requireAuth,
+  validator.validateParams(idParamSchema),
+  requireSessionAccess({ source: 'params', key: 'id', requireOwner: true }),
+  ctrl.delete
 );
 
 export default router;

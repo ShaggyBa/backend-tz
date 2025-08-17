@@ -1,33 +1,46 @@
 import { Request, Response, NextFunction } from 'express';
 import { ModelStatic } from 'sequelize';
-import { Sticker } from '../models';
-import { StickerCreationAttributes, CreateStickerDTO, UpdateStickerDTO, ISocketManager, nullBus } from '../types';
+import { Session, Sticker } from '../models';
+import {
+	StickerCreationAttributes,
+	CreateStickerDTO,
+	UpdateStickerDTO,
+	ISocketManager,
+	nullBus,
+} from '../types';
 import { checkSessionAccess } from '../utils/sessionAccess';
 
 export class StickerController {
-	constructor(private stickerModel: ModelStatic<Sticker>) { }
+	constructor(private stickerModel: ModelStatic<Sticker>, private sessionModel: ModelStatic<Session>) { }
 
-	// POST /api/stickers
-	create = async (req: Request<{}, {}, CreateStickerDTO>, res: Response, next: NextFunction) => {
+	// POST /api/stickers:sessionId
+	create = async (req: Request<{ id: string }, {}, CreateStickerDTO>, res: Response, next: NextFunction) => {
 		try {
-			if (!req.userId) return res.status(401).json({ error: 'Unauthorized' });
+			const userId = (req as any).userId as string | undefined;
+			if (!userId) return res.status(401).json({ error: 'Unauthorized' });
 
-			const dto = req.body as CreateStickerDTO;
+			const sessionId = req.params.id;
+			const { text, x, y, color } = req.body;
+
+			const session = await this.sessionModel.findByPk(sessionId);
+			if (!session) return res.status(404).json({ error: 'Session not found' });
+
 			const payload: StickerCreationAttributes = {
-				sessionId: dto.sessionId,
-				userId: dto.userId,
-				text: dto.text,
-				x: dto.x ?? 0,
-				y: dto.y ?? 0,
-				color: dto.color ?? null
+				sessionId,
+				userId,
+				text,
+				x: x ?? 0,
+				y: y ?? 0,
+				color: color ?? null,
 			};
 
-			if (dto.userId !== req.userId) return res.status(403).json({ error: 'User mismatch' });
+			if (userId !== req.userId) return res.status(403).json({ error: 'User mismatch' });
 
 			const sticker = await this.stickerModel.create(payload);
 
 			const appLocals = (req.app as unknown as { locals?: Record<string, unknown> }).locals ?? {};
-			const runtimeSocketManager = (appLocals.socketManager as ISocketManager | undefined) ?? nullBus;
+			const runtimeSocketManager =
+				(appLocals.socketManager as ISocketManager | undefined) ?? nullBus;
 
 			runtimeSocketManager.emitToSessionStickerCreated(sticker.sessionId, sticker.toJSON());
 
@@ -60,12 +73,11 @@ export class StickerController {
 			const limitNum = limit ? Math.min(100, Math.max(1, Number(limit))) : 100;
 			const offset = (pageNum - 1) * limitNum;
 
-
 			const { rows, count } = await this.stickerModel.findAndCountAll({
 				where,
 				limit: limitNum,
 				offset,
-				order: [['createdAt', 'DESC']]
+				order: [['createdAt', 'DESC']],
 			});
 
 			return res.json({ data: rows, meta: { total: count, page: pageNum, limit: limitNum } });
@@ -99,7 +111,11 @@ export class StickerController {
 	};
 
 	// UPDATE api/stickers/?sessionId=<uuid>:id
-	update = async (req: Request<{ id: string }, {}, UpdateStickerDTO>, res: Response, next: NextFunction) => {
+	update = async (
+		req: Request<{ id: string }, {}, UpdateStickerDTO>,
+		res: Response,
+		next: NextFunction
+	) => {
 		try {
 			if (!req.userId) return res.status(401).json({ error: 'Unauthorized' });
 
@@ -117,7 +133,8 @@ export class StickerController {
 			const updated = await sticker.update(dto as Partial<StickerCreationAttributes>);
 
 			const appLocals = (req.app as unknown as { locals?: Record<string, unknown> }).locals ?? {};
-			const runtimeSocketManager = (appLocals.socketManager as ISocketManager | undefined) ?? nullBus;
+			const runtimeSocketManager =
+				(appLocals.socketManager as ISocketManager | undefined) ?? nullBus;
 
 			runtimeSocketManager.emitToSessionStickerUpdated(updated.sessionId, updated.toJSON());
 
@@ -147,7 +164,8 @@ export class StickerController {
 			await sticker.destroy();
 
 			const appLocals = (req.app as unknown as { locals?: Record<string, unknown> }).locals ?? {};
-			const runtimeSocketManager = (appLocals.socketManager as ISocketManager | undefined) ?? nullBus;
+			const runtimeSocketManager =
+				(appLocals.socketManager as ISocketManager | undefined) ?? nullBus;
 
 			runtimeSocketManager.emitToSessionStickerDeleted(sessionId, payload);
 

@@ -64,7 +64,6 @@ async function run() {
 	console.log('login response (sample):', raw);
 	console.log('Got access token (len)', access?.length ?? 0);
 
-	// Если login не вернул userId — попробуем /api/auth/me (если такой есть)
 	let userId = loginUserId;
 	if (!userId && access) {
 		try {
@@ -103,12 +102,10 @@ async function run() {
 
 	// === CREATE sticker ===
 	console.log('=> create sticker via REST');
-	const resp1 = await fetch(`${API}/api/stickers`, {
+	const resp1 = await fetch(`${API}/api/stickers/${SESSION_ID}`, {
 		method: 'POST',
 		headers: headersJson(access),
 		body: JSON.stringify({
-			sessionId: SESSION_ID,
-			userId: userId,
 			text: 'WS test ' + Date.now(),
 			x: 1, y: 2, color: 'green'
 		})

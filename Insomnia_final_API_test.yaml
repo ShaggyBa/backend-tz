@@ -165,7 +165,7 @@ collection:
         meta:
           id: req_4472d4a73cd846bbb7fa25c1cdf6106f
           created: 1755114156631
-          modified: 1755442291662
+          modified: 1755448841168
           isPrivate: false
           description: ""
           sortKey: -1755114163424
@@ -175,7 +175,7 @@ collection:
             value: insomnia/11.4.0
         authentication:
           type: bearer
-          token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhOGI1NjBhYS00MTY5LTQ5ODktOTZhZC1iYzBhZWVmY2Y0MjciLCJpYXQiOjE3NTU0NDIyMTEsImV4cCI6MTc1NTQ0NDAxMX0.IaSZHlq087UeUvIFBCt_WyRryqRaYtiPfr22j01MQr8
+          token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzZDJiYWI2NS1jZmQ3LTRiMTQtOWIzZC1jNzIyYTQ2NTcyZjEiLCJpYXQiOjE3NTU0NDc5NDYsImV4cCI6MTc1NTQ0OTc0Nn0.Mh4GxipeXaZz44698ipYbAiN3S2FiMprEYwCjFUfhE8
         settings:
           renderRequestBody: true
           encodeUrl: true
@@ -213,7 +213,7 @@ collection:
         meta:
           id: req_1ca20ee2785f427b8df6af68a77d3b13
           created: 1755114188625
-          modified: 1755439976841
+          modified: 1755448059612
           isPrivate: false
           description: ""
           sortKey: -1755114188625
@@ -228,7 +228,7 @@ collection:
             value: insomnia/11.4.0
         authentication:
           type: bearer
-          token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzZDJiYWI2NS1jZmQ3LTRiMTQtOWIzZC1jNzIyYTQ2NTcyZjEiLCJpYXQiOjE3NTU0Mzk5MzEsImV4cCI6MTc1NTQ0MTczMX0.dwtBsjJQi-p9jObRW9lvzcS9jRxjfPnPbUK5xKPo0RE
+          token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzZDJiYWI2NS1jZmQ3LTRiMTQtOWIzZC1jNzIyYTQ2NTcyZjEiLCJpYXQiOjE3NTU0NDc5NDYsImV4cCI6MTc1NTQ0OTc0Nn0.Mh4GxipeXaZz44698ipYbAiN3S2FiMprEYwCjFUfhE8
         settings:
           renderRequestBody: true
           encodeUrl: true
@@ -307,14 +307,14 @@ collection:
         meta:
           id: req_78750a9b51ae4264837c6d260f7b1211
           created: 1755116413576
-          modified: 1755442465950
+          modified: 1755447984415
           isPrivate: false
           description: ""
           sortKey: -1755116413576
         method: POST
         body:
           mimeType: application/json
-          text: '{ "userId": "a8b560aa-4169-4989-96ad-bc0aeefcf427" }'
+          text: '{ "email": "tester@example.com" }'
         headers:
           - name: Content-Type
             value: application/json
@@ -322,7 +322,7 @@ collection:
             value: insomnia/11.4.0
         authentication:
           type: bearer
-          token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhOGI1NjBhYS00MTY5LTQ5ODktOTZhZC1iYzBhZWVmY2Y0MjciLCJpYXQiOjE3NTU0NDIyMTEsImV4cCI6MTc1NTQ0NDAxMX0.IaSZHlq087UeUvIFBCt_WyRryqRaYtiPfr22j01MQr8
+          token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzZDJiYWI2NS1jZmQ3LTRiMTQtOWIzZC1jNzIyYTQ2NTcyZjEiLCJpYXQiOjE3NTU0NDc5NDYsImV4cCI6MTc1NTQ0OTc0Nn0.Mh4GxipeXaZz44698ipYbAiN3S2FiMprEYwCjFUfhE8
         settings:
           renderRequestBody: true
           encodeUrl: true
@@ -337,7 +337,7 @@ collection:
         meta:
           id: req_d4f7e64157da480ea52d8cba5284251b
           created: 1755116429960
-          modified: 1755442468824
+          modified: 1755448079764
           isPrivate: false
           description: ""
           sortKey: -1755116429960
@@ -347,7 +347,7 @@ collection:
             value: insomnia/11.4.0
         authentication:
           type: bearer
-          token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhOGI1NjBhYS00MTY5LTQ5ODktOTZhZC1iYzBhZWVmY2Y0MjciLCJpYXQiOjE3NTU0NDIyMTEsImV4cCI6MTc1NTQ0NDAxMX0.IaSZHlq087UeUvIFBCt_WyRryqRaYtiPfr22j01MQr8
+          token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzZDJiYWI2NS1jZmQ3LTRiMTQtOWIzZC1jNzIyYTQ2NTcyZjEiLCJpYXQiOjE3NTU0NDc5NDYsImV4cCI6MTc1NTQ0OTc0Nn0.Mh4GxipeXaZz44698ipYbAiN3S2FiMprEYwCjFUfhE8
         settings:
           renderRequestBody: true
           encodeUrl: true
@@ -395,12 +395,12 @@ collection:
       sortKey: -1755110217912
       description: ""
     children:
-      - url: "{{ _.backend_env.baseUrl }}/stickers"
+      - url: "{{ _.backend_env.baseUrl }}/stickers/d6f23e09-b035-46b8-b4cf-cf416bd92c35"
         name: Create Sticker
         meta:
           id: req_d896b6479d11467783c540c3e0b97eff
           created: 1755114567448
-          modified: 1755442435005
+          modified: 1755448855306
           isPrivate: false
           description: ""
           sortKey: -1755114567448
@@ -409,8 +409,6 @@ collection:
           mimeType: application/json
           text: |-
             {
-              "sessionId": "d6f23e09-b035-46b8-b4cf-cf416bd92c35",
-              "userId": "a8b560aa-4169-4989-96ad-bc0aeefcf427",
               "text": "Hello Test",
               "x": 25,
               "y": 32,
@@ -425,7 +423,7 @@ collection:
             id: pair_0a8d0a42a6d943a79e0e12949ac9a007
         authentication:
           type: bearer
-          token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhOGI1NjBhYS00MTY5LTQ5ODktOTZhZC1iYzBhZWVmY2Y0MjciLCJpYXQiOjE3NTU0NDIyMTEsImV4cCI6MTc1NTQ0NDAxMX0.IaSZHlq087UeUvIFBCt_WyRryqRaYtiPfr22j01MQr8
+          token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzZDJiYWI2NS1jZmQ3LTRiMTQtOWIzZC1jNzIyYTQ2NTcyZjEiLCJpYXQiOjE3NTU0NDc5NDYsImV4cCI6MTc1NTQ0OTc0Nn0.Mh4GxipeXaZz44698ipYbAiN3S2FiMprEYwCjFUfhE8
         settings:
           renderRequestBody: true
           encodeUrl: true
@@ -608,14 +606,14 @@ collection:
         meta:
           id: req_bd2dfc088d374a8eb003b4b56a108e8d
           created: 1755285714683
-          modified: 1755442202293
+          modified: 1755447945336
           isPrivate: false
           description: ""
           sortKey: -1755285714683
         method: POST
         body:
           mimeType: application/json
-          text: '{"email":"tester2@example.com","password":"secret123"}'
+          text: '{"email":"tester3@example.com","password":"secret123"}'
         headers:
           - name: Content-Type
             value: application/json
@@ -710,25 +708,25 @@ cookieJar:
   meta:
     id: jar_0e00f4e588706a4b89cf7740cf81118a020da56a
     created: 1754915451522
-    modified: 1755442211291
+    modified: 1755447946681
   cookies:
     - key: refreshToken
       value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzZDJiYWI2NS1jZmQ3LTRiMTQtOWIzZC1jNzIyYTQ2NTcyZjEiLCJpYXQiOjE3NTU0NDE5ODcsImV4cCI6MTc1NjY1MTU4N30.f9V1s_NRLRxf23ZljKO-ZCNBnpMU6_P0cYdEKGKY29Y
       httpOnly: true
       hostOnly: true
       creation: 2025-08-17T14:47:00.735Z
-      id: fd7b71df-d6ee-4d30-9095-6ce7c17b0473
+      id: 9baa8b2d-9b88-4ddb-bcbf-4cd4eea40590
     - key: refreshToken
-      value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhOGI1NjBhYS00MTY5LTQ5ODktOTZhZC1iYzBhZWVmY2Y0MjciLCJpYXQiOjE3NTU0NDIyMTEsImV4cCI6MTc1NjY1MTgxMX0.wfA78RRbX6-pkx5sBYtU17sYGiw6DijLLV8Adb3zcgc
+      value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzZDJiYWI2NS1jZmQ3LTRiMTQtOWIzZC1jNzIyYTQ2NTcyZjEiLCJpYXQiOjE3NTU0NDc5NDYsImV4cCI6MTc1NjY1NzU0Nn0.lEgPTbj3edUqlO1RdL7isTdV5P19LowtUEXY0XLm4kQ
       maxAge: 1209
       domain: localhost
       path: /
       httpOnly: true
       hostOnly: true
       creation: 2025-08-17T13:50:52.621Z
-      lastAccessed: 2025-08-17T14:50:11.291Z
+      lastAccessed: 2025-08-17T16:25:46.681Z
       sameSite: lax
-      id: 8f14d58c-bb6c-417e-b6f4-5de3cce34153
+      id: e5be90b6-4bdc-4ecc-ab6a-7a4031287117
 environments:
   name: Base Environment
   meta:

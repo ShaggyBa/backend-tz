@@ -1,13 +1,16 @@
-import type { Optional } from "sequelize";
+import type { Optional } from 'sequelize';
 
-// * User attributes 
+// * User attributes
 export interface UserAttributes {
-	id: string;
-	email: string;
-	name?: string | null;
-	passwordHash: string;
-	jwtToken?: string | null;
-	createdAt?: Date;
-	updatedAt?: Date;
+  id: string;
+  email: string;
+  name?: string | null;
+  passwordHash: string;
+  jwtToken?: string | null;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
-export type UserCreationAttributes = Optional<UserAttributes, 'id' | 'name' | 'jwtToken' | 'createdAt' | 'updatedAt'>;
+export type UserCreationAttributes = Optional<
+  UserAttributes,
+  'id' | 'name' | 'jwtToken' | 'createdAt' | 'updatedAt'
+>;
