@@ -1,4 +1,4 @@
-import { BelongsTo, BelongsToMany, Column, DataType, ForeignKey, HasMany, Model, Table } from 'sequelize-typescript';
+import { BelongsToMany, Column, DataType, ForeignKey, HasMany, Model, Table } from 'sequelize-typescript';
 import { SessionParticipant, Sticker, User } from '.';
 import { SessionAttributes, SessionCreationAttributes } from '../types';
 
@@ -19,7 +19,7 @@ export class Session extends Model<SessionAttributes, SessionCreationAttributes>
 
 	@ForeignKey(() => User)
 	@Column({ type: DataType.UUID, allowNull: true })
-	declare ownerId?: string;
+	declare ownerId: string;
 
 	@HasMany(() => SessionParticipant)
 	declare participants?: SessionParticipant[];

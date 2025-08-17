@@ -5,6 +5,7 @@ import { UserCreationAttributes } from '../types';
 import { signAccessToken, signRefreshToken, verifyToken } from '../utils/jwt';
 import { hashPassword, comparePasswords } from '../utils/password';
 import "dotenv/config";
+import { timeToNum } from '../utils/timeToNum';
 
 export class AuthController {
 	constructor(private userModel: ModelStatic<User>) { }
@@ -33,7 +34,7 @@ export class AuthController {
 				httpOnly: true,
 				secure: process.env.NODE_ENV === 'production',
 				sameSite: 'lax',
-				maxAge: 7 * 24 * 60 * 60 * 1000, // TODO синхронизировать с REFRESH_EXPIRES
+				maxAge: timeToNum(process.env.JWT_REFRESH_EXPIRES) || 7 * 24 * 60 * 60,
 			});
 
 			const { passwordHash: _ph, ...safe } = user.toJSON() as any;
@@ -64,7 +65,7 @@ export class AuthController {
 				httpOnly: true,
 				secure: process.env.NODE_ENV === 'production',
 				sameSite: 'lax',
-				maxAge: 7 * 24 * 60 * 60 * 1000, // TODO синхронизировать с REFRESH_EXPIRES
+				maxAge: timeToNum(process.env.JWT_REFRESH_EXPIRES) || 7 * 24 * 60 * 60
 			});
 
 			const { passwordHash: _ph, ...safe } = user.toJSON() as any;
@@ -99,7 +100,7 @@ export class AuthController {
 				httpOnly: true,
 				secure: process.env.NODE_ENV === 'production',
 				sameSite: 'lax',
-				maxAge: 7 * 24 * 60 * 60 * 1000, // TODO синхронизировать с REFRESH_EXPIRES
+				maxAge: timeToNum(process.env.JWT_REFRESH_EXPIRES) || 7 * 24 * 60 * 60
 			});
 
 			return res.json({ accessToken: newAccess, refreshToken: newRefresh });

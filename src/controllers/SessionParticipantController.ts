@@ -7,7 +7,6 @@ import {
 	ParticipantPayload,
 	SessionParticipantAttributes
 } from '../types';
-import { ISocketManager, nullBus } from '../types/';
 import { getRuntimeSocketManager } from '../utils/getRuntimeSocketManager';
 
 export class SessionParticipantController {
@@ -27,11 +26,11 @@ export class SessionParticipantController {
 			const session = await this.sessionModel.findByPk(sessionId);
 			if (!session) return res.status(404).json({ error: 'Session not found' });
 
-			const created = await this.participantModel.create({
-				sessionId,
-				userId: dto.userId,
-				role: dto.role ?? 'guest'
-			} as SessionParticipantCreationAttributes);
+			const existing = await this.participantModel.findOne({ where: { sessionId, userId: dto.userId } });
+			if (existing) {
+				return res.status(409).json({ error: 'Participant already exists', participant: existing });
+			}
+			const created = await this.participantModel.create({ sessionId, userId: dto.userId, role: dto.role ?? 'guest' } as SessionParticipantCreationAttributes);
 
 			const payload: ParticipantPayload = {
 				id: created.id,
@@ -40,11 +39,8 @@ export class SessionParticipantController {
 				role: created.role ?? null,
 				createdAt: created.createdAt?.toISOString()
 			};
-			console.log(created, payload, 'created');
 			const runtimeBus = getRuntimeSocketManager(req);
-			console.log(runtimeBus, 'runtimeBus');
 			runtimeBus.emitParticipantJoined(sessionId, payload);
-			console.log("emmited?")
 			return res.status(201).json(created);
 		} catch (err) {
 			return next(err);

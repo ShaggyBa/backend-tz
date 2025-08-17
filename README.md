@@ -1,158 +1,170 @@
 # Тестовое задание 
 ## Junior Plus Backend‑разработчик (Node.js / TypeScript) 
+
+Мини-проект — прототип модуля «Стикеры»: CRUD через REST + realtime рассылка событий по WebSocket (socket.io).  
+Реализация: TypeScript (ESM), Express, Sequelize(Postgres), socket.io, Zod, Jest.
+
+---
+## Требования
+- Node 18+ (ESM)
+- NPM
+- PostgreSQL (используется [Neon](https://neon.com/))
+## Переменные окружения (.env)
+```bash
+NODE_ENV=development
+
+PORT=1234
+
+USER_NAME="base_user"
+USER_PASSWORD="npg_3NMhLtF5EUYc"
+
+DATABASE_URL=postgresql://${USER_NAME}:${USER_PASSWORD}@ep-weathered-dew-a9lpxl8a-pooler.gwc.azure.neon.tech/neondb?sslmode=require&channel_binding=require
+
+JWT_SECRET=4eb3e75a254c2f7e5693465dee94f37e490a90e178369c279578db0e35540ab7
+JWT_REFRESH_EXPIRES=14d
+JWT_ACCESS_EXPIRES=30m
+BCRYPT_SALT_ROUNDS=10
+```
+
+## Установка
+```bash
+npm install
+```
+
+## Запуск сервера
+```bash
+npm run dev
+```
+
+## Запуск тестов
+В проекте есть небольшие unit-тесты для контроллеров и SocketManager.
+```bash
+npm test
+```
+
+## WS тест 
+Есть node-скрипт, который демонстративно проверяет workflow: подключается к socket.io (с токеном), создаёт/обновляет/удаляет стикер через REST и ожидает соответствующие WS-события.
+1. Получить access token (через /api/auth/login или /api/auth/register).
+2. Подключиться к websocket (можно через консоль браузера):
+```JS
+const socket = io('http://localhost:1234', { auth: { token: 'Bearer <access>' } });
+socket.emit('joinSession', { sessionId: '<session-id>' });
+socket.on('stickerCreated', (p) => console.log(p));
+```
+или можно воспользоваться данным кодом (браузер):
+```JS
+(async () => {
+  const API = 'http://localhost:1234';
+  const email = 'tester@example.com';   
+  const password = 'secret123';      
+  const SESSION_ID = '2d3b626a-a6e7-4dba-9d56-578030699e3b'; 
+  // 1) логинимся и получаем accessToken
+  const loginRes = await fetch(`${API}/api/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password }),
+    credentials: 'include' 
+  });
+  const loginBody = await loginRes.json();
+  console.log('login:', loginBody);
+  const ACCESS = loginBody.accessToken;
+
+  if (typeof io === 'undefined') {
+    console.error('io is not defined — socket.io client не загружен. Попробуй /socket.io/socket.io.js');
+    return;
+  }
+
+  // 2) подключаемся и передаём access в auth.token
+  const socket = io(API, { auth: { token: `Bearer ${ACCESS}` }, transports: ['websocket'] });
+
+  socket.on('connect', () => {
+    console.log('ws connected', socket.id);
+    socket.emit('joinSession', { sessionId: SESSION_ID });
+  });
+
+  // 3) подписываемся на события
+  socket.on('joined', (m) => console.log('joined', m));
+  socket.on('stickerCreated', (p) => console.log('stickerCreated', p));
+  socket.on('stickerUpdated', (p) => console.log('stickerUpdated', p));
+  socket.on('stickerDeleted', (p) => console.log('stickerDeleted', p));
+  socket.on('participantJoined', (p) => console.log('participantJoined', p));
+  socket.on('participantLeft', (p) => console.log('participantLeft', p));
+  socket.on('connect_error', (err) => console.error('connect_error', err));
+})();
+```
+3. Запустить test-ws.mjs
+
+```bash
+node test-wc.mjs
+```
+4. Наблюдать за логами
+
+## Insomnia
+Экспортированные файлы с запросами
+1. Insomnia_first_API_test (выполнялся при первом построении API - без JWT)
+2. Insomnia_with_jwt (выполнялся при первой интеграции JWT)
+3. Insomnia_final (последнее тестирование API)
+
+## API — базовые маршруты
+
+* `POST /api/auth/register` — регистрация (возвращает accessToken + refreshToken).
+
+* `POST /api/auth/login` — логин (возвращает accessToken + refreshToken).
+
+* `POST /api/auth/refresh` — обновление access token (использует httpOnly cookie refresh token).
+
+* `POST /api/auth/logout` — логаут (удаляет refresh token в БД).
+
+* `GET/POST/PATCH/DELETE` /api/users — CRUD пользователей.
+
+* `GET/POST/PATCH/DELETE` /api/sessions — CRUD сессий.
+
+* `POST /api/sessions/:id/participants` — добавить участника.
+
+* `GET /api/stickers / POST /api/stickers / PATCH /api/stickers/:id / DELETE /api/stickers/:id` — работа со стикерами.
+
+Запросы требуют `Authorization: Bearer <accessToken>`. Refresh token хранится в httpOnly cookie
+
+## WS (socket.io)
+
+Сервер использует namespace / и комнаты session:<sessionId>. События:
+
+Входящие от клиента:
+
+* `joinSession { sessionId }`
+
+* `leaveSession { sessionId }`
+
+Исходящие от сервера (для участников комнаты):
+
+* `stickerCreated, stickerUpdated, stickerDeleted`
+
+* `participantJoined, participantLeft`
+
+* `joined` (подтверждение присоединения)
+
 ---
 ## Этапы работы над модулем "Стикеры"
 ## Содержание
 
-- [x] [[#Этап 0 — подготовка]] ✅ 2025-08-11
+- [x] #Этап 0 — подготовка ✅ 2025-08-11
     
-- [x] [[#Этап 1 — DB + миграции]] ✅ 2025-08-12
+- [x] #Этап 1 — DB + миграции ✅ 2025-08-12
     
-- [x] [[#Этап 2 — модели (Sequelize)]] ✅ 2025-08-12
+- [x] #Этап 2 — модели (Sequelize) ✅ 2025-08-12
     
-- [x] [[#Этап 3 — `app.ts` / `server` (bootstrap, класс Server)]] ✅ 2025-08-14
+- [x] #Этап 3 — `app.ts` / `server` ✅ 2025-08-14
     
-- [x] [[#Этап 4 — Socket.IO менеджер + типы событий]] ✅ 2025-08-14
+- [x] #Этап 4 — Socket.IO менеджер + типы событий ✅ 2025-08-14
 
-- [x] [[#Этап 5 — Контроллеры (классы), сервисы и роуты]] ✅ 2025-08-14
+- [x] #Этап 5 — Контроллеры (классы), сервисы и роуты ✅ 2025-08-14
     
-- [x] [[#Этап 6 — Интеграция realtime с CRUD]] ✅ 2025-08-14
+- [x] #Этап 6 — Интеграция realtime с CRUD ✅ 2025-08-14
     
-- [x] [[#Этап 7 — DTO, валидация и типы]] ✅ 2025-08-14
+- [x] #Этап 7 — DTO, валидация и типы ✅ 2025-08-14
     
-- [x] [[#Этап 8 — Аутентификация и сессии]] ✅ 2025-08-15
+- [x] #Этап 8 — Аутентификация и сессии ✅ 2025-08-15
 
 ## Дополнительно
 
 - [x] Unit tests (Jest) ✅ 2025-08-15
-
----
-
-## Этап 0 — подготовка
-
-**Цель:** убедиться, что проект запускается, установлены основные зависимости и настроены окружение/скрипты.
-
-**Задачи**
-
-- Проверить `package.json` (`"type": "module"`), `tsconfig.json`, ESLint и Prettier.
-    
-- Установить зависимости:
-    
-- Создать `.env` с `DATABASE_URL`, `PORT`, `NODE_ENV`, `SECRET`.
-
-**Результат:** dev-сервер стартует, базовая конфигурация проекта готова.  
-
----
-
-## Этап 1 — DB + миграции
-
-**Цель:** подготовить подключение к PostgreSQL и систему миграций.
-
-**Задачи**
-
-- `src/db/index.ts` — экспорт `sequelize` и `connectDB()`.
-    
-- Выбрать/настроить миграции.
-    
-- `src/db/migrations/*` — миграции для `users`, `stickers`, `sessions`.
-    
-- npm-скрипты: `migrate`, `migrate:up`, `migrate:down`.
-    
-**Памятка:** - [unzug](https://github.com/sequelize/umzug)
-**Результат:** миграции создают таблицы в Neon.  
-
-
-
-**Upd** Было принято решение отказаться от работы с миграциями, недостаточно времени для разбора ошибок при работе с данным стеком.
-
----
-
-## Этап 2 — модели (Sequelize)
-
-**Цель:** типизированные модели `User`, `Sticker`, `Session` и их связи.
-
-**Структура**
-
-`src/models/   index.ts   User.ts   Sticker.ts   Session.ts`
-
-**Результат:** модели + `models/index.ts` с `belongsTo`/`hasMany`.  
-
----
-
-## Этап 3 — `app.ts` / `server` (bootstrap, класс Server)
-
-**Цель:** чёткое разделение: 
-`app.ts` — Express app; 
-`Server` — старт/stop, подключение DB и socket.io.
-
-**Файлы**
-
-`src/   app.ts   server/Server.ts   index.ts`
-
-**Результат:** управление сервером - `start()`/`shutdown()`.  
-
----
-
-## Этап 4 — Socket.IO: менеджер + типы событий
-
-**Цель:** отдельный `SocketManager` с типами `ClientToServerEvents` / `ServerToClientEvents`, room-management, авторизация сокета.
-
-**Файлы**
-
-`src/realtime/   types.ts   SocketManager.ts`
-
-**Результат:** типизированный realtime менеджер.  
-
----
-
-## Этап 5 — Контроллеры (классы), сервисы и роуты
-
-**Цель:** тонкие контроллеры (HTTP) + толстые сервисы (бизнес-логика), DI-подход.
-
-**Файлы** 
-
-`src/controllers/StickerController.ts src/services/StickerService.ts src/routes/stickers.ts`
-
-**Результат:** контроллеры — классы; сервисы содержат бизнес-логику.  
-
-
----
-
-## Этап 6 — Интеграция realtime с CRUD
-
-**Цель:** при REST-операциях отправлять соответствующие события socket.io.
-
-**Подходы**
-
-- Инжектировать `SocketManager` в сервисы и вызывать методы вида `emitStickerCreated(boardId, payload)`.
-    
-- Или использовать `EventEmitter` / `EventBus` между слоями и подписаться на него в `SocketManager`.
-
-**Результат:** после `POST /api/stickers` — все сокет-клиенты в комнате доски получают `stickerCreated`.  
-
----
-
-## Этап 7 — DTO, валидация и типы
-
-**Цель:** безопасные входные данные и согласованные типы DTO.
-
-**Памятка:** использовать `zod` 
-
-**Результат:** валидация на уровне роутов, DTO-типы в коде.  
-
----
-
-## Этап 8 — Аутентификация и сессии
-
-**Цель:** простая, рабочая аутентификация (JWT) и модель `Session`.
-
-**Задачи**
-
-- Модель `Session` (userId, token, expiresAt).
-    
-- Auth middleware (`Authorization: Bearer <token>`), ставит `req.user`.
-    
-- Socket.IO: авторизация при соединении (token в query/headers) — reject если невалиден.
-    
-
-**Результат:** только авторизованные пользователи создают/меняют стикеры.  

@@ -1,7 +1,5 @@
-import { Server, Socket } from 'socket.io';
-import { SessionAttributes } from './Session';
-import { SessionParticipantAttributes } from './SessionParticipant';
-import { StickerAttributes } from './Sticker';
+import type { DefaultEventsMap, Server, Socket } from 'socket.io';
+
 
 export interface ParticipantPayload {
 	id: string;
@@ -44,3 +42,15 @@ export const nullBus: ISocketManager = {
 	emitParticipantLeft: () => { },
 	io: undefined,
 };
+
+export interface SocketManagerOptions {
+	verifyToken?: (token: string) => Promise<{ userId: string } | null> | { userId: string } | null;
+	corsOrigins?: string[] | boolean;
+}
+
+
+export type SocketData = {
+	userId?: string;
+};
+
+export type TSocket = Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, SocketData>;

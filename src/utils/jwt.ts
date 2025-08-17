@@ -20,7 +20,6 @@ export function signRefreshToken(payload: TokenPayload): string {
 
 export function verifyToken(token: string): TokenPayload | null {
 	try {
-		// verify возвращает string | JwtPayload, поэтому приводим
 		const decoded = jwt.verify(token, JWT_SECRET) as TokenPayload;
 		return decoded;
 	} catch (err) {

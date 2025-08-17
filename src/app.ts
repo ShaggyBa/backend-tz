@@ -25,7 +25,7 @@ app.get('/health', (_req, res) => res.json({ status: 'ok' }));
 
 app.get('/ready', async (_req, res) => {
 	try {
-		await sequelize.authenticate(); // короткая проверка
+		await sequelize.authenticate();
 		res.json({ ready: true });
 	} catch (err) {
 		res.status(503).json({ ready: false });

@@ -28,7 +28,6 @@ export class Validator {
 			const result = schema.safeParse(req.query);
 			if (!result.success) return next(result.error);
 
-			// заглушка
 			(req as any).validatedQuery = result.data;
 
 			return next();

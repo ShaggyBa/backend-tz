@@ -16,6 +16,7 @@ export class SessionController {
 			const userId = req.userId;
 			if (!userId)
 				return res.status(401).json({ error: 'Unauthorized' });
+
 			const payload: SessionCreationAttributes = { name: dto.name, ownerId: userId };
 			const session = await this.sessionModel.create(payload);
 			return res.status(201).json(session);

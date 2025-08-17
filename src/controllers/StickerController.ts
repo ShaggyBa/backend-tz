@@ -1,14 +1,17 @@
 import { Request, Response, NextFunction } from 'express';
-import { ModelStatic, WhereOptions } from 'sequelize';
-import { Sticker } from '../models';
-import { StickerCreationAttributes, CreateStickerDTO, UpdateStickerDTO, StickerAttributes, ISocketManager, nullBus } from '../types';
+import { ModelStatic } from 'sequelize';
+import { SessionParticipant, Sticker } from '../models';
+import { StickerCreationAttributes, CreateStickerDTO, UpdateStickerDTO, ISocketManager, nullBus } from '../types';
+import { checkSessionAccess } from '../utils/sessionAccess';
 
 export class StickerController {
-	constructor(private stickerModel: ModelStatic<Sticker>) { }
+	constructor(private stickerModel: ModelStatic<Sticker>, private participantModel: ModelStatic<SessionParticipant>) { }
 
 	// POST /api/stickers
 	create = async (req: Request<{}, {}, CreateStickerDTO>, res: Response, next: NextFunction) => {
 		try {
+			if (!req.userId) return res.status(401).json({ error: 'Unauthorized' });
+
 			const dto = req.body as CreateStickerDTO;
 			const payload: StickerCreationAttributes = {
 				sessionId: dto.sessionId,
@@ -18,6 +21,11 @@ export class StickerController {
 				y: dto.y ?? 0,
 				color: dto.color ?? null
 			};
+
+			const access = await checkSessionAccess(dto.userId, dto.sessionId);
+			if (!access.allowed) return res.status(403).json({ error: access.reason });
+
+
 			const sticker = await this.stickerModel.create(payload);
 
 			const appLocals = (req.app as unknown as { locals?: Record<string, unknown> }).locals ?? {};
@@ -38,9 +46,13 @@ export class StickerController {
 		next: NextFunction
 	) => {
 		try {
-			// заглушка
+			if (!req.userId) return res.status(401).json({ error: 'Unauthorized' });
+
 			const q = (req as any).validatedQuery ?? req.query;
 			const sessionId = q.sessionId as string | undefined;
+
+			if (!sessionId) return res.status(400).json({ error: 'Missing sessionId' });
+
 			const page = q.page as string | undefined;
 			const limit = q.limit as string | undefined;
 
@@ -49,6 +61,9 @@ export class StickerController {
 			const pageNum = page ? Math.max(1, Number(page)) : 1;
 			const limitNum = limit ? Math.min(100, Math.max(1, Number(limit))) : 100;
 			const offset = (pageNum - 1) * limitNum;
+
+			const access = await checkSessionAccess(req.userId, sessionId);
+			if (!access.allowed) return res.status(403).json({ error: access.reason });
 
 			const { rows, count } = await this.stickerModel.findAndCountAll({
 				where,
@@ -66,10 +81,19 @@ export class StickerController {
 	// GET /api/stickers/:id
 	getById = async (req: Request<{ id: string }>, res: Response, next: NextFunction) => {
 		try {
+			if (!req.userId) return res.status(401).json({ error: 'Unauthorized' });
+
 			const id = req.params.id;
 			if (!id) return res.status(400).json({ error: 'Missing id' });
+
 			const sticker = await this.stickerModel.findByPk(id);
 			if (!sticker) return res.status(404).json({ error: 'Sticker not found' });
+
+			const participant = await this.participantModel.findOne({
+				where: { sessionId: sticker.sessionId, userId: req.userId }
+			});
+			if (!participant) return res.status(403).json({ error: 'Forbidden' });
+
 			return res.json(sticker);
 		} catch (err) {
 			return next(err);
@@ -81,18 +105,24 @@ export class StickerController {
 		try {
 			const id = req.params.id;
 			if (!id) return res.status(400).json({ error: 'Missing id' });
+			if (!req.userId) return res.status(401).json({ error: 'Unauthorized' });
 
 			const dto = req.body as UpdateStickerDTO;
 			const sticker = await this.stickerModel.findByPk(id);
 			if (!sticker) return res.status(404).json({ error: 'Sticker not found' });
+
+			const participant = await this.participantModel.findOne({
+				where: { sessionId: sticker.sessionId, userId: req.userId }
+			});
+			if (!participant) return res.status(403).json({ error: 'Forbidden' });
+
 
 			const updated = await sticker.update(dto as Partial<StickerCreationAttributes>);
 
 			const appLocals = (req.app as unknown as { locals?: Record<string, unknown> }).locals ?? {};
 			const runtimeSocketManager = (appLocals.socketManager as ISocketManager | undefined) ?? nullBus;
 
-			runtimeSocketManager.emitToSessionStickerCreated(updated.sessionId, updated.toJSON());
-
+			runtimeSocketManager.emitToSessionStickerUpdated(updated.sessionId, updated.toJSON());
 
 			return res.json(updated);
 		} catch (err) {
@@ -106,12 +136,15 @@ export class StickerController {
 			const id = req.params.id;
 			const sticker = await this.stickerModel.findByPk(id);
 			if (!sticker) return res.status(404).json({ error: 'Sticker not found' });
+
+			const sessionId = sticker.sessionId;
+			const payload = { id: sticker.id };
 			await sticker.destroy();
 
 			const appLocals = (req.app as unknown as { locals?: Record<string, unknown> }).locals ?? {};
 			const runtimeSocketManager = (appLocals.socketManager as ISocketManager | undefined) ?? nullBus;
 
-			runtimeSocketManager.emitToSessionStickerDeleted(sticker.sessionId, sticker.toJSON());
+			runtimeSocketManager.emitToSessionStickerDeleted(sessionId, payload);
 
 			return res.json({ message: 'Deleted' });
 		} catch (err) {

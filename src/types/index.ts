@@ -1,28 +1,31 @@
 export type {
 	UserAttributes,
 	UserCreationAttributes
-} from './User';
+} from './models/User';
 
 export type {
 	StickerAttributes,
 	StickerCreationAttributes
-} from './Sticker';
+} from './models/Sticker';
 
 export type {
 	SessionAttributes,
 	SessionCreationAttributes
-} from './Session';
+} from './models/Session';
 
 export type {
 	SessionParticipantAttributes,
 	SessionParticipantCreationAttributes
-} from './SessionParticipant';
+} from './models/SessionParticipant';
 
 export type {
 	ParticipantPayload,
 	StickerPayload,
 	VerifyFn,
 	ISocketManager,
+	SocketManagerOptions,
+	SocketData,
+	TSocket
 } from "./ws"
 
 export {

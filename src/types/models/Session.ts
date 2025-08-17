@@ -1,4 +1,4 @@
-import { Optional } from "sequelize";
+import type { Optional } from "sequelize";
 
 // * Session attributes
 export interface SessionAttributes {

@@ -2,7 +2,12 @@ import { BelongsTo, Column, DataType, ForeignKey, Model, Table } from 'sequelize
 import { Session, User } from '.';
 import { SessionParticipantAttributes, SessionParticipantCreationAttributes } from '../types';
 
-@Table({ tableName: 'session_participants' })
+@Table({
+	tableName: 'session_participants',
+	indexes: [
+		{ unique: true, fields: ['sessionId', 'userId'] }
+	]
+})
 export class SessionParticipant extends Model<
 	SessionParticipantAttributes,
 	SessionParticipantCreationAttributes
