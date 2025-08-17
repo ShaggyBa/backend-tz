@@ -5,7 +5,6 @@ export class Validator {
 	validateBody<T extends ZodSchema>(schema: T): RequestHandler {
 		return (req: Request, res: Response, next: NextFunction) => {
 			const result = schema.safeParse(req.body);
-			console.log("validation", result, req.body)
 			if (!result.success) {
 				return next(result.error);
 			}

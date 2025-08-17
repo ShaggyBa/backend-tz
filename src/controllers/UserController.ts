@@ -52,7 +52,6 @@ export class UserController {
 	update = async (req: Request<{ id: string }, {}, UpdateUserDTO>, res: Response, next: NextFunction) => {
 		try {
 			const id = req.params.id;
-			console.log(id)
 			if (!id) return res.status(400).json({ error: 'Missing id' });
 
 			const dto = req.body;

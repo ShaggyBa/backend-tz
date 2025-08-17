@@ -1,5 +1,5 @@
 import type { ISocketManager } from '../types/socket';
-
+import type { SessionAccess } from '../types/auth';
 declare global {
 	namespace Express {
 		interface Application {
@@ -10,6 +10,7 @@ declare global {
 		}
 		interface Request {
 			userId?: string;
+			sessionAccess?: SessionAccess;
 		}
 
 	}

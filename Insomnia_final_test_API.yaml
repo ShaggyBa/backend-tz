@@ -1,0 +1,738 @@
+type: collection.insomnia.rest/5.0
+name: My first collection
+meta:
+  id: wrk_eae306d03f894e979a1fee256725d5e0
+  created: 1754915451519
+  modified: 1754915451519
+  description: ""
+collection:
+  - name: User
+    meta:
+      id: fld_4a56361f4ac841ad8b5660222c6f308c
+      created: 1755110160552
+      modified: 1755110160552
+      sortKey: -1755110160552
+      description: ""
+    children:
+      - url: "{{ _.backend_env.baseUrl }}/users"
+        name: Create User
+        meta:
+          id: req_a98df0256ac54b19afd59d18b4b765f7
+          created: 1755110106100
+          modified: 1755111557053
+          isPrivate: false
+          description: ""
+          sortKey: -1755110169143
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "email": "Peter@example.com",
+              "password": "secret1234",
+              "name": "Peter"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.4.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.backend_env.baseUrl }}/users/38592499-4042-49cb-9b17-16829de45d14"
+        name: Update User
+        meta:
+          id: req_bf0fe1ebf7fa407b8b53664ad286b347
+          created: 1755110134679
+          modified: 1755114017571
+          isPrivate: false
+          description: ""
+          sortKey: -1755110169043
+        method: PATCH
+        body:
+          mimeType: application/json
+          text: |-
+            {
+            	"name": "Peppers"
+            }
+        parameters:
+          - id: pair_7db96991339040ddab1b92496495ce88
+            name: ""
+            value: ""
+            description: ""
+            disabled: false
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.4.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.backend_env.baseUrl }}/users/4191da01-a6b3-4c69-baa5-cc1c566bd20d"
+        name: Get User
+        meta:
+          id: req_4361cba579674545aebabf208fc538f2
+          created: 1755110143776
+          modified: 1755290070241
+          isPrivate: false
+          description: ""
+          sortKey: -1755110168843
+        method: GET
+        parameters:
+          - id: pair_ecc7317e0bab42f1b597085183f82ac1
+            name: ""
+            value: ""
+            description: ""
+            disabled: false
+        headers:
+          - name: User-Agent
+            value: insomnia/11.4.0
+        authentication:
+          type: bearer
+          token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI0MTkxZGEwMS1hNmIzLTRjNjktYmFhNS1jYzFjNTY2YmQyMGQiLCJpYXQiOjE3NTUyODk3MTIsImV4cCI6MTc1NTI5MTUxMn0.Aa5mYHwxabrnjOZ5XmUWiFAekFA5flRFRknquIebFOE
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.backend_env.baseUrl }}/users/7946da32-1422-44e2-a87b-488e2aa42cea"
+        name: Delete User
+        meta:
+          id: req_53c279f5593d4e488e6b4f6a812dc3cc
+          created: 1755110150641
+          modified: 1755112605902
+          isPrivate: false
+          description: ""
+          sortKey: -1755110168943
+        method: DELETE
+        headers:
+          - name: User-Agent
+            value: insomnia/11.4.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.backend_env.baseUrl }}/users"
+        name: Get Users
+        meta:
+          id: req_f02a0326ac4f4ec28ae201f3abb13379
+          created: 1755110241583
+          modified: 1755111233464
+          isPrivate: false
+          description: ""
+          sortKey: -1755110241583
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.4.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Session
+    meta:
+      id: fld_10cbca727d75474994732dbf6b7b7476
+      created: 1755110195819
+      modified: 1755110195819
+      sortKey: -1755110195819
+      description: ""
+    children:
+      - url: "{{ _.backend_env.baseUrl }}/sessions"
+        name: Get Sessions
+        meta:
+          id: req_4472d4a73cd846bbb7fa25c1cdf6106f
+          created: 1755114156631
+          modified: 1755442291662
+          isPrivate: false
+          description: ""
+          sortKey: -1755114163424
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.4.0
+        authentication:
+          type: bearer
+          token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhOGI1NjBhYS00MTY5LTQ5ODktOTZhZC1iYzBhZWVmY2Y0MjciLCJpYXQiOjE3NTU0NDIyMTEsImV4cCI6MTc1NTQ0NDAxMX0.IaSZHlq087UeUvIFBCt_WyRryqRaYtiPfr22j01MQr8
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.backend_env.baseUrl }}/sessions/d6f23e09-b035-46b8-b4cf-cf416bd92c35"
+        name: Get Session
+        meta:
+          id: req_68e6caf56eb04cbbacdddfb20efc1daf
+          created: 1755114163324
+          modified: 1755442302580
+          isPrivate: false
+          description: ""
+          sortKey: -1755114163324
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.4.0
+        authentication:
+          type: bearer
+          token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhOGI1NjBhYS00MTY5LTQ5ODktOTZhZC1iYzBhZWVmY2Y0MjciLCJpYXQiOjE3NTU0NDIyMTEsImV4cCI6MTc1NTQ0NDAxMX0.IaSZHlq087UeUvIFBCt_WyRryqRaYtiPfr22j01MQr8
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.backend_env.baseUrl }}/sessions"
+        name: Create Session
+        meta:
+          id: req_1ca20ee2785f427b8df6af68a77d3b13
+          created: 1755114188625
+          modified: 1755439976841
+          isPrivate: false
+          description: ""
+          sortKey: -1755114188625
+        method: POST
+        body:
+          mimeType: application/json
+          text: '{ "name": "Room 5" }'
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.4.0
+        authentication:
+          type: bearer
+          token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzZDJiYWI2NS1jZmQ3LTRiMTQtOWIzZC1jNzIyYTQ2NTcyZjEiLCJpYXQiOjE3NTU0Mzk5MzEsImV4cCI6MTc1NTQ0MTczMX0.dwtBsjJQi-p9jObRW9lvzcS9jRxjfPnPbUK5xKPo0RE
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.backend_env.baseUrl }}/sessions/d6f23e09-b035-46b8-b4cf-cf416bd92c35"
+        name: Delete Session
+        meta:
+          id: req_3eb26270ae9d447cbd64e7840063e9cb
+          created: 1755114203438
+          modified: 1755442358109
+          isPrivate: false
+          description: ""
+          sortKey: -1755114203438
+        method: DELETE
+        headers:
+          - name: User-Agent
+            value: insomnia/11.4.0
+        authentication:
+          type: bearer
+          token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhOGI1NjBhYS00MTY5LTQ5ODktOTZhZC1iYzBhZWVmY2Y0MjciLCJpYXQiOjE3NTU0NDIyMTEsImV4cCI6MTc1NTQ0NDAxMX0.IaSZHlq087UeUvIFBCt_WyRryqRaYtiPfr22j01MQr8
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.backend_env.baseUrl }}/sessions/d6f23e09-b035-46b8-b4cf-cf416bd92c35"
+        name: Update Session
+        meta:
+          id: req_0c7cc6b572954a0fb2c6c9363ae50c95
+          created: 1755114211832
+          modified: 1755442336977
+          isPrivate: false
+          description: ""
+          sortKey: -1755114211832
+        method: PATCH
+        body:
+          mimeType: application/json
+          text: |-
+            {
+            	"name": "Room 5 - patched"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.4.0
+        authentication:
+          type: bearer
+          token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhOGI1NjBhYS00MTY5LTQ5ODktOTZhZC1iYzBhZWVmY2Y0MjciLCJpYXQiOjE3NTU0NDIyMTEsImV4cCI6MTc1NTQ0NDAxMX0.IaSZHlq087UeUvIFBCt_WyRryqRaYtiPfr22j01MQr8
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: SessionParticipant
+    meta:
+      id: fld_c1ac3514e4c247a4b78d78ae12bb3f3c
+      created: 1755110208095
+      modified: 1755116434078
+      sortKey: -1755110208095
+      description: ""
+    children:
+      - url: "{{ _.backend_env.baseUrl
+          }}/sessions/d6f23e09-b035-46b8-b4cf-cf416bd92c35/participants"
+        name: Create SessionParticipant
+        meta:
+          id: req_78750a9b51ae4264837c6d260f7b1211
+          created: 1755116413576
+          modified: 1755442465950
+          isPrivate: false
+          description: ""
+          sortKey: -1755116413576
+        method: POST
+        body:
+          mimeType: application/json
+          text: '{ "userId": "a8b560aa-4169-4989-96ad-bc0aeefcf427" }'
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.4.0
+        authentication:
+          type: bearer
+          token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhOGI1NjBhYS00MTY5LTQ5ODktOTZhZC1iYzBhZWVmY2Y0MjciLCJpYXQiOjE3NTU0NDIyMTEsImV4cCI6MTc1NTQ0NDAxMX0.IaSZHlq087UeUvIFBCt_WyRryqRaYtiPfr22j01MQr8
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.backend_env.baseUrl
+          }}/sessions/d6f23e09-b035-46b8-b4cf-cf416bd92c35/participants/"
+        name: Get SessionParticipants
+        meta:
+          id: req_d4f7e64157da480ea52d8cba5284251b
+          created: 1755116429960
+          modified: 1755442468824
+          isPrivate: false
+          description: ""
+          sortKey: -1755116429960
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.4.0
+        authentication:
+          type: bearer
+          token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhOGI1NjBhYS00MTY5LTQ5ODktOTZhZC1iYzBhZWVmY2Y0MjciLCJpYXQiOjE3NTU0NDIyMTEsImV4cCI6MTc1NTQ0NDAxMX0.IaSZHlq087UeUvIFBCt_WyRryqRaYtiPfr22j01MQr8
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.backend_env.baseUrl
+          }}/sessions/d6f23e09-b035-46b8-b4cf-cf416bd92c35/participants/a8b560a\
+          a-4169-4989-96ad-bc0aeefcf427"
+        name: Delete SessionParticipant
+        meta:
+          id: req_57552a929f7d4a78adbc83b61f149cee
+          created: 1755116443475
+          modified: 1755442471877
+          isPrivate: false
+          description: ""
+          sortKey: -1755116443475
+        method: DELETE
+        body:
+          mimeType: application/json
+          text: ""
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.4.0
+        authentication:
+          type: bearer
+          token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhOGI1NjBhYS00MTY5LTQ5ODktOTZhZC1iYzBhZWVmY2Y0MjciLCJpYXQiOjE3NTU0NDIyMTEsImV4cCI6MTc1NTQ0NDAxMX0.IaSZHlq087UeUvIFBCt_WyRryqRaYtiPfr22j01MQr8
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Sticker
+    meta:
+      id: fld_1ecc56499bf54c07a43b7127fb8b63e4
+      created: 1755110217912
+      modified: 1755114589716
+      sortKey: -1755110217912
+      description: ""
+    children:
+      - url: "{{ _.backend_env.baseUrl }}/stickers"
+        name: Create Sticker
+        meta:
+          id: req_d896b6479d11467783c540c3e0b97eff
+          created: 1755114567448
+          modified: 1755442435005
+          isPrivate: false
+          description: ""
+          sortKey: -1755114567448
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "sessionId": "d6f23e09-b035-46b8-b4cf-cf416bd92c35",
+              "userId": "a8b560aa-4169-4989-96ad-bc0aeefcf427",
+              "text": "Hello Test",
+              "x": 25,
+              "y": 32,
+              "color": "yellow"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+            id: pair_77e1d71a8e6d4a65aed54b856f7adc1e
+          - name: User-Agent
+            value: insomnia/11.4.0
+            id: pair_0a8d0a42a6d943a79e0e12949ac9a007
+        authentication:
+          type: bearer
+          token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhOGI1NjBhYS00MTY5LTQ5ODktOTZhZC1iYzBhZWVmY2Y0MjciLCJpYXQiOjE3NTU0NDIyMTEsImV4cCI6MTc1NTQ0NDAxMX0.IaSZHlq087UeUvIFBCt_WyRryqRaYtiPfr22j01MQr8
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.backend_env.baseUrl }}/stickers"
+        name: Get Stickers
+        meta:
+          id: req_f8cc0dc72abb48b1a6207fc00aa6eb00
+          created: 1755114592299
+          modified: 1755442223535
+          isPrivate: false
+          description: ""
+          sortKey: -1755114592299
+        method: GET
+        parameters:
+          - id: pair_d9bf1dd8155f41cf846015fcea42d6f3
+            name: sessionId
+            value: d6f23e09-b035-46b8-b4cf-cf416bd92c35
+            description: ""
+            disabled: false
+          - id: pair_7924b45e0596496397b7262d8b823f5d
+            name: limit
+            value: "2"
+            description: ""
+            disabled: true
+        headers:
+          - name: User-Agent
+            value: insomnia/11.4.0
+            id: pair_9a5e1e54135b49458e8c8d3297d31942
+        authentication:
+          type: bearer
+          token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhOGI1NjBhYS00MTY5LTQ5ODktOTZhZC1iYzBhZWVmY2Y0MjciLCJpYXQiOjE3NTU0NDIyMTEsImV4cCI6MTc1NTQ0NDAxMX0.IaSZHlq087UeUvIFBCt_WyRryqRaYtiPfr22j01MQr8
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.backend_env.baseUrl }}/stickers/9e6577fe-3bdb-4f28-bf2a-c0107fb0e1a1"
+        name: Get Sticker
+        meta:
+          id: req_4d25e06240384729a7dbf0c0caab690a
+          created: 1755114602703
+          modified: 1755442247580
+          isPrivate: false
+          description: ""
+          sortKey: -1755114602703
+        method: GET
+        parameters:
+          - id: pair_53823ba4e4e940799456adf928fc3a6c
+            name: sessionId
+            value: d6f23e09-b035-46b8-b4cf-cf416bd92c35
+            description: ""
+            disabled: false
+        headers:
+          - name: User-Agent
+            value: insomnia/11.4.0
+        authentication:
+          type: bearer
+          token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhOGI1NjBhYS00MTY5LTQ5ODktOTZhZC1iYzBhZWVmY2Y0MjciLCJpYXQiOjE3NTU0NDIyMTEsImV4cCI6MTc1NTQ0NDAxMX0.IaSZHlq087UeUvIFBCt_WyRryqRaYtiPfr22j01MQr8
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.backend_env.baseUrl }}/stickers/9e6577fe-3bdb-4f28-bf2a-c0107fb0e1a1"
+        name: Delete Sticker
+        meta:
+          id: req_e11e808442484f01b9822aeafa2afead
+          created: 1755114608941
+          modified: 1755442264168
+          isPrivate: false
+          description: ""
+          sortKey: -1755114608941
+        method: DELETE
+        parameters:
+          - id: pair_15fdb36e70794694b26574f6533fd1a2
+            name: sessionId
+            value: d6f23e09-b035-46b8-b4cf-cf416bd92c35
+            description: ""
+            disabled: false
+        headers:
+          - name: User-Agent
+            value: insomnia/11.4.0
+        authentication:
+          type: bearer
+          token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzZDJiYWI2NS1jZmQ3LTRiMTQtOWIzZC1jNzIyYTQ2NTcyZjEiLCJpYXQiOjE3NTU0NDIwNjksImV4cCI6MTc1NTQ0Mzg2OX0.hmwm_02Upukl9OlJNGVgpRLf1ZBNqEXVH-V-VVngsZY
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.backend_env.baseUrl }}/stickers/9e6577fe-3bdb-4f28-bf2a-c0107fb0e1a1"
+        name: Update Sticker
+        meta:
+          id: req_a3d42fd023b744f2a89a2e2799f53e25
+          created: 1755114615672
+          modified: 1755442255645
+          isPrivate: false
+          description: ""
+          sortKey: -1755114615672
+        method: PATCH
+        body:
+          mimeType: application/json
+          text: |-
+            {
+            	"color": "green"
+            }
+        parameters:
+          - id: pair_30f7c412fa23486db15aaf755fd225d9
+            name: sessionId
+            value: d6f23e09-b035-46b8-b4cf-cf416bd92c35
+            description: ""
+            disabled: false
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.4.0
+        authentication:
+          type: bearer
+          token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzZDJiYWI2NS1jZmQ3LTRiMTQtOWIzZC1jNzIyYTQ2NTcyZjEiLCJpYXQiOjE3NTU0NDIwNjksImV4cCI6MTc1NTQ0Mzg2OX0.hmwm_02Upukl9OlJNGVgpRLf1ZBNqEXVH-V-VVngsZY
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Auth
+    meta:
+      id: fld_0d5b33c342ea4db3a84499f1cdb7af0c
+      created: 1755285701364
+      modified: 1755285701364
+      sortKey: -1755285701364
+      description: ""
+    children:
+      - url: "{{ _.backend_env.baseUrl }}/auth/register"
+        name: Register
+        meta:
+          id: req_5778dfeb400d4caf9dfbd17ce7f7c2bb
+          created: 1755285704708
+          modified: 1755438233806
+          isPrivate: false
+          description: ""
+          sortKey: -1755285704708
+        method: POST
+        body:
+          mimeType: application/json
+          text: '{ "email": "tester3@example.com", "password": "secret123", "name":
+            "Tester" }'
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.4.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.backend_env.baseUrl }}/auth/login"
+        name: Login
+        meta:
+          id: req_bd2dfc088d374a8eb003b4b56a108e8d
+          created: 1755285714683
+          modified: 1755442202293
+          isPrivate: false
+          description: ""
+          sortKey: -1755285714683
+        method: POST
+        body:
+          mimeType: application/json
+          text: '{"email":"tester2@example.com","password":"secret123"}'
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.4.0
+        authentication:
+          type: bearer
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.backend_env.baseUrl }}/auth/logout"
+        name: Logout
+        meta:
+          id: req_a502582f71a643478359474109696dc7
+          created: 1755285723217
+          modified: 1755442172739
+          isPrivate: false
+          description: ""
+          sortKey: -1755285723217
+        method: POST
+        headers:
+          - name: User-Agent
+            value: insomnia/11.4.0
+            id: pair_0b33711b01f14112afce14f05e8621b7
+        authentication:
+          type: bearer
+          token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzZDJiYWI2NS1jZmQ3LTRiMTQtOWIzZC1jNzIyYTQ2NTcyZjEiLCJpYXQiOjE3NTU0NDIwNjksImV4cCI6MTc1NTQ0Mzg2OX0.hmwm_02Upukl9OlJNGVgpRLf1ZBNqEXVH-V-VVngsZY
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.backend_env.baseUrl }}/auth/refresh"
+        name: Refresh
+        meta:
+          id: req_8c8708b353e0480f96dc7e2226e6b933
+          created: 1755285730284
+          modified: 1755289418816
+          isPrivate: false
+          description: ""
+          sortKey: -1755285730284
+        method: POST
+        body:
+          mimeType: application/json
+          text: ""
+        headers:
+          - name: Content-Type
+            value: application/json
+            id: pair_bc36c2c4055549679754fe8011729996
+          - name: User-Agent
+            value: insomnia/11.4.0
+            id: pair_024f8d11cc554e12b5fd7bec98edf725
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - url: localhost:1234/health
+    name: Health Check
+    meta:
+      id: req_a7d586dd7c0442f591d0ffcfb8c19573
+      created: 1754915451538
+      modified: 1755110100907
+      isPrivate: false
+      description: ""
+      sortKey: -1754915451538
+    method: GET
+    headers:
+      - name: User-Agent
+        value: insomnia/11.4.0
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+cookieJar:
+  name: Default Jar
+  meta:
+    id: jar_0e00f4e588706a4b89cf7740cf81118a020da56a
+    created: 1754915451522
+    modified: 1755442211291
+  cookies:
+    - key: refreshToken
+      value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzZDJiYWI2NS1jZmQ3LTRiMTQtOWIzZC1jNzIyYTQ2NTcyZjEiLCJpYXQiOjE3NTU0NDE5ODcsImV4cCI6MTc1NjY1MTU4N30.f9V1s_NRLRxf23ZljKO-ZCNBnpMU6_P0cYdEKGKY29Y
+      httpOnly: true
+      hostOnly: true
+      creation: 2025-08-17T14:47:00.735Z
+      id: fd7b71df-d6ee-4d30-9095-6ce7c17b0473
+    - key: refreshToken
+      value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhOGI1NjBhYS00MTY5LTQ5ODktOTZhZC1iYzBhZWVmY2Y0MjciLCJpYXQiOjE3NTU0NDIyMTEsImV4cCI6MTc1NjY1MTgxMX0.wfA78RRbX6-pkx5sBYtU17sYGiw6DijLLV8Adb3zcgc
+      maxAge: 1209
+      domain: localhost
+      path: /
+      httpOnly: true
+      hostOnly: true
+      creation: 2025-08-17T13:50:52.621Z
+      lastAccessed: 2025-08-17T14:50:11.291Z
+      sameSite: lax
+      id: 8f14d58c-bb6c-417e-b6f4-5de3cce34153
+environments:
+  name: Base Environment
+  meta:
+    id: env_0e00f4e588706a4b89cf7740cf81118a020da56a
+    created: 1754915451521
+    modified: 1754915451521
+    isPrivate: false

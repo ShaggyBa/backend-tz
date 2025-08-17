@@ -1,11 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
 import { ModelStatic } from 'sequelize';
-import { SessionParticipant, Sticker } from '../models';
+import { Sticker } from '../models';
 import { StickerCreationAttributes, CreateStickerDTO, UpdateStickerDTO, ISocketManager, nullBus } from '../types';
 import { checkSessionAccess } from '../utils/sessionAccess';
 
 export class StickerController {
-	constructor(private stickerModel: ModelStatic<Sticker>, private participantModel: ModelStatic<SessionParticipant>) { }
+	constructor(private stickerModel: ModelStatic<Sticker>) { }
 
 	// POST /api/stickers
 	create = async (req: Request<{}, {}, CreateStickerDTO>, res: Response, next: NextFunction) => {
@@ -22,9 +22,7 @@ export class StickerController {
 				color: dto.color ?? null
 			};
 
-			const access = await checkSessionAccess(dto.userId, dto.sessionId);
-			if (!access.allowed) return res.status(403).json({ error: access.reason });
-
+			if (dto.userId !== req.userId) return res.status(403).json({ error: 'User mismatch' });
 
 			const sticker = await this.stickerModel.create(payload);
 
@@ -62,8 +60,6 @@ export class StickerController {
 			const limitNum = limit ? Math.min(100, Math.max(1, Number(limit))) : 100;
 			const offset = (pageNum - 1) * limitNum;
 
-			const access = await checkSessionAccess(req.userId, sessionId);
-			if (!access.allowed) return res.status(403).json({ error: access.reason });
 
 			const { rows, count } = await this.stickerModel.findAndCountAll({
 				where,
@@ -78,7 +74,7 @@ export class StickerController {
 		}
 	};
 
-	// GET /api/stickers/:id
+	// GET api/stickers/?sessionId=<uuid>:id
 	getById = async (req: Request<{ id: string }>, res: Response, next: NextFunction) => {
 		try {
 			if (!req.userId) return res.status(401).json({ error: 'Unauthorized' });
@@ -86,13 +82,15 @@ export class StickerController {
 			const id = req.params.id;
 			if (!id) return res.status(400).json({ error: 'Missing id' });
 
+			const q = (req as any).validatedQuery ?? req.query;
+			const sessionId = q.sessionId as string | undefined;
+			if (!sessionId) return res.status(400).json({ error: 'Missing sessionId' });
+
 			const sticker = await this.stickerModel.findByPk(id);
 			if (!sticker) return res.status(404).json({ error: 'Sticker not found' });
 
-			const participant = await this.participantModel.findOne({
-				where: { sessionId: sticker.sessionId, userId: req.userId }
-			});
-			if (!participant) return res.status(403).json({ error: 'Forbidden' });
+			const access = await checkSessionAccess(req.userId, sticker.sessionId);
+			if (!access.allowed) return res.status(403).json({ error: access.reason });
 
 			return res.json(sticker);
 		} catch (err) {
@@ -100,22 +98,21 @@ export class StickerController {
 		}
 	};
 
-	// UPDATE /api/stickers/:id
+	// UPDATE api/stickers/?sessionId=<uuid>:id
 	update = async (req: Request<{ id: string }, {}, UpdateStickerDTO>, res: Response, next: NextFunction) => {
 		try {
+			if (!req.userId) return res.status(401).json({ error: 'Unauthorized' });
+
 			const id = req.params.id;
 			if (!id) return res.status(400).json({ error: 'Missing id' });
-			if (!req.userId) return res.status(401).json({ error: 'Unauthorized' });
 
 			const dto = req.body as UpdateStickerDTO;
 			const sticker = await this.stickerModel.findByPk(id);
 			if (!sticker) return res.status(404).json({ error: 'Sticker not found' });
 
-			const participant = await this.participantModel.findOne({
-				where: { sessionId: sticker.sessionId, userId: req.userId }
-			});
-			if (!participant) return res.status(403).json({ error: 'Forbidden' });
-
+			const q = (req as any).validatedQuery ?? req.query;
+			const sessionId = q.sessionId as string | undefined;
+			if (!sessionId) return res.status(400).json({ error: 'Missing sessionId' });
 
 			const updated = await sticker.update(dto as Partial<StickerCreationAttributes>);
 
@@ -130,14 +127,22 @@ export class StickerController {
 		}
 	};
 
-	// DELETE /api/stickers/:id
+	// DELETE api/stickers/?sessionId=<uuid>:id
 	delete = async (req: Request<{ id: string }>, res: Response, next: NextFunction) => {
 		try {
+			if (!req.userId) return res.status(401).json({ error: 'Unauthorized' });
+
 			const id = req.params.id;
+
+			if (!id) return res.status(400).json({ error: 'Missing id' });
+
 			const sticker = await this.stickerModel.findByPk(id);
 			if (!sticker) return res.status(404).json({ error: 'Sticker not found' });
 
-			const sessionId = sticker.sessionId;
+			const q = (req as any).validatedQuery ?? req.query;
+			const sessionId = q.sessionId as string | undefined;
+			if (!sessionId) return res.status(400).json({ error: 'Missing sessionId' });
+
 			const payload = { id: sticker.id };
 			await sticker.destroy();
 

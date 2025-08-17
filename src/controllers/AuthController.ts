@@ -105,7 +105,7 @@ export class AuthController {
 
 			return res.json({ accessToken: newAccess, refreshToken: newRefresh });
 		} catch (err) {
-			next(err);
+			return next(err);
 		}
 	};
 	// POST /api/auth/logout
@@ -124,7 +124,7 @@ export class AuthController {
 
 			return res.json({ ok: true });
 		} catch (err) {
-			next(err);
+			return next(err);
 		}
 	};
 }

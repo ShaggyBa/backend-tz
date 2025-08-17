@@ -23,8 +23,13 @@ export class SessionParticipantController {
 			const sessionId = req.params.id;
 			const dto = req.body;
 
+			const userId = (req as any).userId as string | undefined;
+			if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+
 			const session = await this.sessionModel.findByPk(sessionId);
 			if (!session) return res.status(404).json({ error: 'Session not found' });
+
+			if (session.ownerId !== userId) return res.status(403).json({ error: 'Only owner can add participants' });
 
 			const existing = await this.participantModel.findOne({ where: { sessionId, userId: dto.userId } });
 			if (existing) {
@@ -50,7 +55,20 @@ export class SessionParticipantController {
 	// GET /api/sessions/:id/participants
 	list = async (req: Request<{ id: string }>, res: Response, next: NextFunction) => {
 		try {
+			const userId = (req as any).userId as string | undefined;
+			if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+
 			const sessionId = req.params.id;
+
+			const session = await this.sessionModel.findByPk(sessionId);
+			if (!session) return res.status(404).json({ error: 'Session not found' });
+
+			if (session.ownerId !== userId) {
+				const participant = await this.participantModel.findOne({ where: { sessionId, userId } });
+				if (!participant) return res.status(403).json({ error: 'Forbidden' });
+			}
+
+
 			const participants = await this.participantModel.findAll({
 				where: { sessionId },
 				order: [['createdAt', 'ASC']]
@@ -64,12 +82,28 @@ export class SessionParticipantController {
 	// DELETE /api/sessions/:id/participants/:participantId
 	remove = async (req: Request<{ id: string; participantId: string }>, res: Response, next: NextFunction) => {
 		try {
+			const userId = (req as any).userId as string | undefined;
+			if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+			const sessionId = req.params.id;
+
 			const participantId = req.params.participantId;
-			const p = await this.participantModel.findByPk(participantId);
+			const session = await this.sessionModel.findByPk(sessionId);
+			if (!session) return res.status(404).json({ error: 'Session not found' });
+
+			let p = await this.participantModel.findByPk(participantId);
+
+			if (!p) {
+				p = await this.participantModel.findOne({ where: { sessionId, userId: participantId } as any });
+			}
+
 			if (!p) return res.status(404).json({ error: 'Participant not found' });
 
+
+			if (session.ownerId !== userId && p.userId !== userId) {
+				return res.status(403).json({ error: 'Forbidden' });
+			}
+
 			const data = p.toJSON() as SessionParticipantAttributes;
-			const sessionId = data.sessionId;
 
 			await p.destroy();
 

@@ -2,12 +2,14 @@ import { io } from 'socket.io-client';
 import { setTimeout as wait } from 'timers/promises';
 
 const API = 'http://localhost:1234';
-const SESSION_ID = '2d3b626a-a6e7-4dba-9d56-578030699e3b';
-const USER_ID = 'a8b560aa-4169-4989-96ad-bc0aeefcf427';
-const ACCESS = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhOGI1NjBhYS00MTY5LTQ5ODktOTZhZC1iYzBhZWVmY2Y0MjciLCJpYXQiOjE3NTU0MjIwODYsImV4cCI6MTc1NTQyMzg4Nn0.vbyXea8VKan11AViTlXgcMKYUorpfrdczAsrU4m5vCQ";
-function headersJson() {
+const SESSION_ID = 'd6f23e09-b035-46b8-b4cf-cf416bd92c35'; // Та же сессия, что и в test-wc-client-browser.mjs
+const EMAIL = 'tester3@example.com';
+const PASSWORD = 'secret123';
+
+
+function headersJson(access) {
 	const h = { 'Content-Type': 'application/json' };
-	if (ACCESS && ACCESS !== '<PASTE_ACCESS_TOKEN_HERE>') h['Authorization'] = `Bearer ${ACCESS}`;
+	if (access) h['Authorization'] = `Bearer ${access}`;
 	return h;
 }
 
@@ -16,7 +18,6 @@ function setupEventBuffer(socket, events) {
 	events.forEach(ev => buffers.set(ev, []));
 	events.forEach(ev => {
 		socket.on(ev, payload => {
-			console.log('[socket event]', ev, payload);
 			buffers.get(ev).push(payload);
 		});
 	});
@@ -30,19 +31,59 @@ function setupEventBuffer(socket, events) {
 	};
 }
 
-async function run() {
-	console.log('Connecting to', API);
-	if (!ACCESS || ACCESS === '<PASTE_ACCESS_TOKEN_HERE>') {
-		console.warn('ACCESS_TOKEN not provided. Export ACCESS_TOKEN env or paste into script.');
+async function loginAndGetUser() {
+	const resp = await fetch(`${API}/api/auth/login`, {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({ email: EMAIL, password: PASSWORD })
+	});
+
+	const bodyText = await resp.text();
+	let body;
+	try { body = JSON.parse(bodyText); } catch (e) { body = bodyText; }
+
+	if (!resp.ok) {
+		throw new Error(`Login failed ${resp.status}: ${bodyText}`);
 	}
 
-	// подключаемся с передачей токена в auth
-	const socket = io(API, ACCESS && ACCESS !== '<PASTE_ACCESS_TOKEN_HERE>'
-		? { auth: { token: `Bearer ${ACCESS}` }, transports: ['websocket'] }
-		: { transports: ['websocket'] }
-	);
+	let userId;
+	if (body && typeof body === 'object') {
+		// варианты: { user: { id: '...' } }, { userId: '...' }, { user: { userId: '...' } }, { data: { user: ... } }
+		userId = body.user?.id ?? body.user?.userId ?? body.userId ?? body.data?.user?.id ?? body.data?.userId;
+	}
 
-	// ждём подключения
+	const access = body.accessToken ?? body.token ?? null;
+
+	return { access, userId, raw: body };
+}
+
+async function run() {
+	console.log('API', API, 'SESSION_ID', SESSION_ID);
+
+	const { access, userId: loginUserId, raw } = await loginAndGetUser();
+	console.log('login response (sample):', raw);
+	console.log('Got access token (len)', access?.length ?? 0);
+
+	// Если login не вернул userId — попробуем /api/auth/me (если такой есть)
+	let userId = loginUserId;
+	if (!userId && access) {
+		try {
+			const me = await (await fetch(`${API}/api/auth/me`, { headers: headersJson(access) })).json();
+			userId = me.user?.id ?? me.id ?? me.userId;
+			console.log('/api/auth/me ->', me);
+		} catch (err) {
+			console.warn('No /api/auth/me or failed to fetch it:', err?.message ?? err);
+		}
+	}
+
+	if (!userId) {
+		console.error('Не удалось определить userId после логина.');
+		console.error('login raw body:', raw);
+		process.exit(2);
+	}
+
+	const socket = io(API, { auth: { token: `Bearer ${access}` }, transports: ['websocket'] });
+
 	await new Promise((resolve, reject) => {
 		const to = setTimeout(() => reject(new Error('socket connect timeout')), 5000);
 		socket.on('connect', () => { clearTimeout(to); resolve(); });
@@ -50,120 +91,77 @@ async function run() {
 	});
 	console.log('Socket connected', socket.id);
 
-	// Подписываемся заранее на все события
 	const waitForEvent = setupEventBuffer(socket, [
+		'joined',
 		'stickerCreated', 'stickerUpdated', 'stickerDeleted',
-		'participantJoined', 'participantLeft', 'joined'
+		'participantJoined', 'participantLeft'
 	]);
 
-	// join room
 	socket.emit('joinSession', { sessionId: SESSION_ID });
 	console.log('joinSession emitted for', SESSION_ID);
-	// короткая пауза чтобы сервер обработал join
 	await wait(200);
 
 	// === CREATE sticker ===
 	console.log('=> create sticker via REST');
 	const resp1 = await fetch(`${API}/api/stickers`, {
 		method: 'POST',
-		headers: headersJson(),
+		headers: headersJson(access),
 		body: JSON.stringify({
 			sessionId: SESSION_ID,
-			userId: USER_ID,
+			userId: userId,
 			text: 'WS test ' + Date.now(),
 			x: 1, y: 2, color: 'green'
 		})
 	});
-	const json1 = await resp1.json();
+	const text1 = await resp1.text();
+	let json1;
+	try { json1 = JSON.parse(text1); } catch (e) { json1 = text1; }
 	console.log('REST create status', resp1.status, json1);
-	if (resp1.status >= 400) {
-		console.error('Create failed, aborting further steps');
-	} else {
+	if (resp1.status >= 400 && json1?.error === 'ValidationError' && Array.isArray(json1.issues)) {
+		console.error('Validation issues:', json1.issues);
+	}
+	if (resp1.status < 400) {
 		try {
 			const ev = await waitForEvent('stickerCreated', 5000);
 			console.log('Received stickerCreated', ev);
-		} catch (err) { console.error('Error waiting stickerCreated:', err); }
+		} catch (err) { console.error('Error waiting stickerCreated:', err.message || err); }
+	} else {
+		console.error('Create failed, abort further steps');
 	}
-
-	await wait(300);
 
 	// === UPDATE sticker ===
-	if (json1?.id) {
-		console.log('=> update sticker via REST', json1.id);
-		const resp2 = await fetch(`${API}/api/stickers/${json1.id}`, {
-			method: 'PATCH',
-			headers: headersJson(),
-			body: JSON.stringify({ text: 'WS updated ' + Date.now() })
-		});
-		const json2 = await resp2.json();
-		console.log('REST update status', resp2.status, json2);
-		if (resp2.status < 400) {
-			try {
-				const ev2 = await waitForEvent('stickerUpdated', 5000);
-				console.log('Received stickerUpdated', ev2);
-			} catch (err) { console.error('Error waiting stickerUpdated:', err); }
-		}
-	} else {
-		console.warn('No sticker id from create — skipping update/delete.');
-	}
-
-	await wait(300);
-
-	// === ADD participant ===
-	console.log('=> add participant via REST');
-	const addResp = await fetch(`${API}/api/sessions/${SESSION_ID}/participants`, {
-		method: 'POST',
-		headers: headersJson(),
-		body: JSON.stringify({ userId: USER_ID, role: 'guest' })
+	console.log('=> update sticker via REST', json1.id);
+	const resp2 = await fetch(`${API}/api/stickers/${json1.id}?sessionId=${SESSION_ID}`, {
+		method: 'PATCH',
+		headers: headersJson(access),
+		body: JSON.stringify({ text: 'WS updated ' + Date.now() })
 	});
-	const addJson = await addResp.json();
-	console.log('REST add participant status', addResp.status, addJson);
-	if (addResp.status < 400) {
+	const json2 = await resp2.json();
+	console.log('REST update status', resp2.status, json2);
+	if (resp2.status < 400) {
 		try {
-			const pj = await waitForEvent('participantJoined', 5000);
-			console.log('Received participantJoined', pj);
-		} catch (err) { console.error('Error waiting participantJoined:', err); }
+			const ev2 = await waitForEvent('stickerUpdated', 5000);
+			console.log('Received stickerUpdated', ev2);
+		} catch (err) { console.error('Error waiting stickerUpdated:', err); }
 	}
-
-	await wait(300);
-
-	// === REMOVE participant ===
-	if (addJson?.id) {
-		console.log('=> remove participant via REST', addJson.id);
-		const remResp = await fetch(`${API}/api/sessions/${SESSION_ID}/participants/${addJson.id}`, {
-			method: 'DELETE',
-			headers: headersJson()
-		});
-		const remJson = await remResp.json();
-		console.log('REST remove participant status', remResp.status, remJson);
-		if (remResp.status < 400) {
-			try {
-				const pl = await waitForEvent('participantLeft', 5000);
-				console.log('Received participantLeft', pl);
-			} catch (err) { console.error('Error waiting participantLeft:', err); }
-		}
-	}
-
-	await wait(300);
 
 	// === DELETE sticker ===
-	if (json1?.id) {
-		console.log('=> delete sticker via REST', json1.id);
-		const delResp = await fetch(`${API}/api/stickers/${json1.id}`, {
-			method: 'DELETE',
-			headers: headersJson()
-		});
-		const delJson = await delResp.json();
-		console.log('REST delete status', delResp.status, delJson);
-		if (delResp.status < 400) {
-			try {
-				const d = await waitForEvent('stickerDeleted', 5000);
-				console.log('Received stickerDeleted', d);
-			} catch (err) { console.error('Error waiting stickerDeleted:', err); }
-		}
+	console.log('=> delete sticker via REST', json1.id);
+	const resp3 = await fetch(`${API}/api/stickers/${json1.id}?sessionId=${SESSION_ID}`, {
+		method: 'DELETE',
+		headers: headersJson(access)
+	});
+	const json3 = await resp3.json();
+	console.log('REST delete status', resp3.status, json3);
+	if (resp3.status < 400) {
+		try {
+			const ev3 = await waitForEvent('stickerDeleted', 5000);
+			console.log('Received stickerDeleted', ev3);
+		} catch (err) { console.error('Error waiting stickerDeleted:', err); }
 	}
 
-	console.log('Done - disconnecting');
+
+	console.log('Finished smoke test (partial).');
 	socket.disconnect();
 	process.exit(0);
 }

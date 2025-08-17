@@ -5,6 +5,7 @@ import { Session, SessionParticipant } from '../models'; // <-- добавить
 import { createSessionSchema, idParamSchema, updateSessionSchema } from '../types';
 import { Validator } from '../validation/Validator';
 import { requireAuth } from '../middleware/authHandler';
+import { requireSessionAccess } from '../middleware/requireSessionAccess';
 
 const router = Router();
 const validator = new Validator();
@@ -17,12 +18,31 @@ router.post('/', requireAuth, validator.validateBody(createSessionSchema), ctrl.
 router.get('/', requireAuth, ctrl.list);
 
 // api/sessions/:id
-router.get('/:id', requireAuth, validator.validateParams(idParamSchema), ctrl.getById);
+router.get(
+	'/:id',
+	requireAuth,
+	validator.validateParams(idParamSchema),
+	requireSessionAccess({ source: 'params', key: 'id', requireOwner: false }),
+	ctrl.getById
+);
 
 // api/sessions/:id
-router.patch('/:id', requireAuth, validator.validateParams(idParamSchema), validator.validateBody(updateSessionSchema), ctrl.update);
+router.patch(
+	'/:id',
+	requireAuth,
+	validator.validateParams(idParamSchema),
+	requireSessionAccess({ source: 'params', key: 'id', requireOwner: true }),
+	validator.validateBody(updateSessionSchema),
+	ctrl.update
+);
 
 // api/sessions/:id
-router.delete('/:id', requireAuth, validator.validateParams(idParamSchema), ctrl.delete);
+router.delete(
+	'/:id',
+	requireAuth,
+	validator.validateParams(idParamSchema),
+	requireSessionAccess({ source: 'params', key: 'id', requireOwner: true }),
+	ctrl.delete
+);
 
 export default router;

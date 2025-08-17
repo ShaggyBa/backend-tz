@@ -45,54 +45,9 @@ npm test
 ## WS тест 
 Есть node-скрипт, который демонстративно проверяет workflow: подключается к socket.io (с токеном), создаёт/обновляет/удаляет стикер через REST и ожидает соответствующие WS-события.
 1. Получить access token (через /api/auth/login или /api/auth/register).
-2. Подключиться к websocket (можно через консоль браузера):
-```JS
-const socket = io('http://localhost:1234', { auth: { token: 'Bearer <access>' } });
-socket.emit('joinSession', { sessionId: '<session-id>' });
-socket.on('stickerCreated', (p) => console.log(p));
-```
-или можно воспользоваться данным кодом (браузер):
-```JS
-(async () => {
-  const API = 'http://localhost:1234';
-  const email = 'tester@example.com';   
-  const password = 'secret123';      
-  const SESSION_ID = '2d3b626a-a6e7-4dba-9d56-578030699e3b'; 
-  // 1) логинимся и получаем accessToken
-  const loginRes = await fetch(`${API}/api/auth/login`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password }),
-    credentials: 'include' 
-  });
-  const loginBody = await loginRes.json();
-  console.log('login:', loginBody);
-  const ACCESS = loginBody.accessToken;
+2. Подключиться к websocket можно через консоль браузера с помощью кода, указанного в файле `test-ws-client-browser.js`:
 
-  if (typeof io === 'undefined') {
-    console.error('io is not defined — socket.io client не загружен. Попробуй /socket.io/socket.io.js');
-    return;
-  }
-
-  // 2) подключаемся и передаём access в auth.token
-  const socket = io(API, { auth: { token: `Bearer ${ACCESS}` }, transports: ['websocket'] });
-
-  socket.on('connect', () => {
-    console.log('ws connected', socket.id);
-    socket.emit('joinSession', { sessionId: SESSION_ID });
-  });
-
-  // 3) подписываемся на события
-  socket.on('joined', (m) => console.log('joined', m));
-  socket.on('stickerCreated', (p) => console.log('stickerCreated', p));
-  socket.on('stickerUpdated', (p) => console.log('stickerUpdated', p));
-  socket.on('stickerDeleted', (p) => console.log('stickerDeleted', p));
-  socket.on('participantJoined', (p) => console.log('participantJoined', p));
-  socket.on('participantLeft', (p) => console.log('participantLeft', p));
-  socket.on('connect_error', (err) => console.error('connect_error', err));
-})();
-```
-3. Запустить test-ws.mjs
+3. Запустить `test-ws.mjs`
 
 ```bash
 node test-wc.mjs

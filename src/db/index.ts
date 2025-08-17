@@ -14,7 +14,7 @@ if (!connectionString) {
 export const sequelize: Sequelize = new Sequelize(connectionString, {
 	dialect: 'postgres',
 	protocol: 'postgres',
-	logging: process.env.NODE_ENV === 'production' ? false : console.log,
+	logging: process.env.NODE_ENV === 'production' ? false : false,
 	pool: {
 		max: 10,
 		min: 0,

@@ -9,3 +9,12 @@ export interface SessionAttributes {
 	ownerId: string;
 }
 export type SessionCreationAttributes = Optional<SessionAttributes, 'id' | 'createdAt' | 'updatedAt'>;
+
+type Source = 'params' | 'body' | 'query';
+
+export type RequireSessionAccessOptions = {
+	source?: Source;
+	key?: string;
+	requireSessionId?: boolean;
+	requireOwner?: boolean; // true — только владелец; false — owner OR participant
+};

@@ -10,7 +10,8 @@ export type {
 
 export type {
 	SessionAttributes,
-	SessionCreationAttributes
+	SessionCreationAttributes,
+	RequireSessionAccessOptions
 } from './models/Session';
 
 export type {

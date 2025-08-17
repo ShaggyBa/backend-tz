@@ -12,7 +12,6 @@ export const requireAuth: RequestHandler = (req, res, next) => {
 
 	const payload = verifyToken(token);
 	if (!payload) return res.status(401).json({ error: 'Invalid token' });
-
 	(req as AuthedRequest).userId = payload.userId;
 	return next();
 };
